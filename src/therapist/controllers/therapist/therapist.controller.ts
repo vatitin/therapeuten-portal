@@ -55,8 +55,10 @@ export class TherapistController {
     return this.therapistService.createTherapist(therapistDTO);
   }
 
-  @Get('patients')
-  getPatients() {
-    return this.therapistService.getPatients();
+  @Get('patients/:therapistId')
+  getPatientsFromTherapist(
+    @Param('therapistId', ParseIntPipe) therapistId: number,
+  ) {
+    return this.therapistService.getPatientsFromTherapist(therapistId);
   }
 }

@@ -40,7 +40,9 @@ export class TherapistService {
     return this.therapistRepository.save(therapist);
   }
 
-  getPatients() {
-    return this.patients;
+  getPatientsFromTherapist(therapistId: number) {
+    return this.patientRepository.find({
+      where: { therapist: { id: therapistId } },
+    });
   }
 }
