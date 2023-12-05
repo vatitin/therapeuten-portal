@@ -1,16 +1,21 @@
 import {
+  Body,
   Controller,
   Get,
   HttpException,
   HttpStatus,
   Param,
   ParseIntPipe,
+  Post,
   Req,
   Res,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 
 import { TherapistService } from '../../services/therapist/therapist.service';
 import { Request, Response } from 'express';
+import { PatientDTO } from './patientDTO.entity';
 
 @Controller('therapist')
 export class TherapistController {
@@ -35,5 +40,16 @@ export class TherapistController {
     const patient = this.therapistService.findPatientById(id);
     if (patient) return patient;
     else throw new HttpException('Customer not found', HttpStatus.BAD_REQUEST);
+  }
+
+  @Post('createPatient')
+  @UsePipes(ValidationPipe)
+  createPatient(@Body() patientDTO: PatientDTO) {
+    this.therapistService.createPatient(patientDTO);
+  }
+
+  @Get('patients')
+  getPatients() {
+    return this.therapistService.getPatients();
   }
 }

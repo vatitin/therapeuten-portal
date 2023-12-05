@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { PatientDTO } from '../../controllers/therapist/patientDTO.entity';
 
 @Injectable()
 export class TherapistService {
@@ -15,5 +16,13 @@ export class TherapistService {
 
   findPatientById(id: number) {
     return this.patients.find((patient) => patient.id === id);
+  }
+
+  createPatient(PatientDTO: PatientDTO) {
+    this.patients.push(PatientDTO);
+  }
+
+  getPatients() {
+    return this.patients;
   }
 }

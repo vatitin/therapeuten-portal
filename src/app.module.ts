@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TherapistModule } from './therapist/therapist.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Therapist } from './therapist/entity/Therapist.entity';
+import { Patient } from './therapist/entity/Patient.entity';
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { Therapist } from './therapist/entity/Therapist.entity';
       username: 'myuser',
       password: 'myuserpassword',
       database: 'mydatabase',
-      entities: [Therapist],
+      entities: [Therapist, Patient],
       //todo set this to fale before production
       synchronize: true,
     }),

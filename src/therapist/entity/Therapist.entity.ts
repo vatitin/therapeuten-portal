@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Patient } from './Patient.entity';
 
 @Entity()
 export class Therapist {
@@ -6,15 +7,18 @@ export class Therapist {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true, length: 32 })
-  email!: string;
+  @Column({ unique: true, length: 32, nullable: false })
+  email: string;
 
   @Column({ length: 32 })
   password!: string;
 
-  @Column()
+  @Column({ length: 32 })
   firstName: string;
 
-  @Column()
+  @Column({ length: 32 })
   lastName: string;
+
+  @OneToMany(() => Patient, (patient) => patient.therapist)
+  patients: Patient[];
 }
