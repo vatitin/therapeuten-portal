@@ -16,6 +16,7 @@ import {
 import { TherapistService } from '../../services/therapist/therapist.service';
 import { Request, Response } from 'express';
 import { PatientDTO } from './patientDTO.entity';
+import { TherapistDTO } from './therapistDTO.entity';
 
 @Controller('therapist')
 export class TherapistController {
@@ -45,7 +46,13 @@ export class TherapistController {
   @Post('createPatient')
   @UsePipes(ValidationPipe)
   createPatient(@Body() patientDTO: PatientDTO) {
-    this.therapistService.createPatient(patientDTO);
+    return this.therapistService.createPatient(patientDTO);
+  }
+
+  @Post('signIn')
+  @UsePipes(ValidationPipe)
+  signIn(@Body() therapistDTO: TherapistDTO) {
+    return this.therapistService.createTherapist(therapistDTO);
   }
 
   @Get('patients')

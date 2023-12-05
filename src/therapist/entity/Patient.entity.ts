@@ -9,16 +9,16 @@ export class Patient {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 32 })
+  @Column({ length: 32, nullable: true })
   email: string;
 
-  @Column({ length: 32 })
-  firstName: string;
+  @Column({ length: 32, nullable: true })
+  firstName?: string;
 
-  @Column({ length: 32 })
+  @Column({ length: 32, nullable: true })
   lastName: string;
 
-  @Column({ length: 32 })
+  @Column({ length: 32, nullable: true })
   gender: GenderType;
 
   @ManyToOne(() => Therapist, (therapist) => therapist.patients)
