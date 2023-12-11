@@ -9,6 +9,7 @@ import {
   Post,
   Req,
   Res,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -17,6 +18,9 @@ import { TherapistService } from '../../services/therapist/therapist.service';
 import { Request, Response } from 'express';
 import { PatientDTO } from './patientDTO.entity';
 import { TherapistDTO } from './therapistDTO.entity';
+import { AuthGuard } from 'src/auth/auth/auth.guard';
+import { Session } from 'src/auth/session/session.decorator';
+import { SessionContainer } from 'supertokens-node/recipe/session';
 
 @Controller('therapist')
 export class TherapistController {
@@ -60,5 +64,13 @@ export class TherapistController {
     @Param('therapistId', ParseIntPipe) therapistId: number,
   ) {
     return this.therapistService.getPatientsFromTherapist(therapistId);
+  }
+
+  @Get('test')
+  @UseGuards(new AuthGuard())
+  async getTest(@Session() session: SessionContainer): Promise<string> {
+    console.log(session);
+    // TODO: magic
+    return 'magic';
   }
 }

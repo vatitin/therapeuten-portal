@@ -24,8 +24,8 @@ async function bootstrap() {
   //todo implement prefix
   //app.setGlobalPrefix('api');
   app.enableCors({
-    origin: ['http://localhost:3001'],
-    //methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    origin: ['http://localhost:3000'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: ['content-type', ...supertokens.getAllCORSHeaders()],
     credentials: true,
   });
