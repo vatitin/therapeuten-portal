@@ -15,19 +15,9 @@ export class TherapistService {
     @InjectRepository(Therapist)
     private readonly therapistRepository: Repository<Therapist>,
   ) {}
-  patients = [
-    {
-      id: 1,
-      email: 'a@email.com',
-    },
-    {
-      id: 2,
-      email: 'b@email.com',
-    },
-  ];
 
   findPatientById(id: number) {
-    return this.patients.find((patient) => patient.id === id);
+    return { a: id };
   }
 
   createPatient(patientDTO: PatientDTO) {
@@ -40,9 +30,9 @@ export class TherapistService {
     return this.therapistRepository.save(therapist);
   }
 
-  getPatientsFromTherapist(therapistId: number) {
+  getPatientsFromTherapist(id: string) {
     return this.patientRepository.find({
-      where: { therapist: { id: therapistId } },
+      where: { therapist: { id } },
     });
   }
 }

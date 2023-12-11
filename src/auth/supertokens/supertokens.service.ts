@@ -40,7 +40,7 @@ export class SupertokensService {
                       const email = emails.at(0);
                       const therapistDTO = new TherapistDTO();
                       therapistDTO.email = email;
-                      therapistDTO.superTokensUserId = response.user.id;
+                      therapistDTO.id = response.user.id;
                       therapistService.createTherapist(therapistDTO);
                     }
                   }
