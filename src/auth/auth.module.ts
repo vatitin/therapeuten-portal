@@ -8,9 +8,14 @@ import {
 import { AuthMiddleware } from './auth/auth.middleware';
 import { ConfigInjectionToken, AuthModuleConfig } from './config.interface';
 import { SupertokensService } from './supertokens/supertokens.service';
+import { TherapistService } from 'src/therapist/services/therapist/therapist.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Patient } from 'src/therapist/entity/Patient.entity';
+import { Therapist } from 'src/therapist/entity/Therapist.entity';
 
 @Module({
-  providers: [SupertokensService],
+  imports: [TypeOrmModule.forFeature([Patient, Therapist])],
+  providers: [SupertokensService, TherapistService],
   exports: [],
   controllers: [],
 })

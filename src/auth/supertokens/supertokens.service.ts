@@ -5,10 +5,15 @@ import EmailPassword from 'supertokens-node/recipe/emailpassword';
 import Dashboard from 'supertokens-node/recipe/dashboard';
 
 import { ConfigInjectionToken, AuthModuleConfig } from '../config.interface';
+import { TherapistDTO } from 'src/therapist/controllers/therapist/therapistDTO.entity';
+import { TherapistService } from 'src/therapist/services/therapist/therapist.service';
 
 @Injectable()
 export class SupertokensService {
-  constructor(@Inject(ConfigInjectionToken) private config: AuthModuleConfig) {
+  constructor(
+    @Inject(ConfigInjectionToken) private config: AuthModuleConfig,
+    private therapistService: TherapistService,
+  ) {
     supertokens.init({
       supertokens: {
         connectionURI: config.connectionURI,
@@ -16,7 +21,35 @@ export class SupertokensService {
       },
       appInfo: config.appInfo,
       recipeList: [
-        EmailPassword.init(),
+        EmailPassword.init({
+          override: {
+            functions: (originalImplementation) => {
+              return {
+                ...originalImplementation,
+                signUp: async function (input) {
+                  // First we call the original implementation of signUpPOST.
+                  const response = await originalImplementation.signUp(input);
+
+                  // Post sign up response, we check if it was successful
+                  if (
+                    response.status === 'OK' &&
+                    response.user.loginMethods.length === 1
+                  ) {
+                    const emails = response.user.emails;
+                    if (emails.length > 0) {
+                      const email = emails.at(0);
+                      const therapistDTO = new TherapistDTO();
+                      therapistDTO.email = email;
+                      therapistDTO.superTokensUserId = response.user.id;
+                      therapistService.createTherapist(therapistDTO);
+                    }
+                  }
+                  return response;
+                },
+              };
+            },
+          },
+        }),
         Session.init(),
         Dashboard.init({ admins: ['sackmannva@gmail.com'] }),
       ],

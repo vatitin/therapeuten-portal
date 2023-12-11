@@ -10,14 +10,16 @@ export class Therapist {
   @Column({ unique: true, length: 32, nullable: false })
   email: string;
 
-  @Column({ length: 32 })
-  password!: string;
+  @Column('uuid')
+  superTokensUserId: string;
 
+  /*
   @Column({ length: 32 })
   firstName: string;
 
   @Column({ length: 32 })
   lastName: string;
+*/
 
   @OneToMany(() => Patient, (patient) => patient.therapist)
   patients: Patient[];

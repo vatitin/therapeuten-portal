@@ -1,17 +1,19 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsUUID } from 'class-validator';
 
 export class TherapistDTO {
   @IsEmail()
   @IsNotEmpty()
-  email: string;
+  email: string | undefined;
 
   @IsNotEmpty()
-  @MinLength(10)
-  password: string;
+  @IsUUID()
+  superTokensUserId: string;
 
+  /*
   @IsString()
   firstName: string;
 
   @IsString()
   lastName: string;
+  */
 }
