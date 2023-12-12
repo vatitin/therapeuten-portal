@@ -18,6 +18,7 @@ import { AuthGuard } from 'src/auth/auth/auth.guard';
 import { Session } from 'src/auth/session/session.decorator';
 import { SessionContainer } from 'supertokens-node/recipe/session';
 import { Patient, StatusType } from 'src/therapist/entity/Patient.entity';
+import { StatusTypeValidationPipe } from './statusType.validation.pipe';
 
 @Controller('therapist')
 export class TherapistController {
@@ -34,7 +35,7 @@ export class TherapistController {
   @UsePipes(ValidationPipe)
   @UseGuards(new AuthGuard())
   createPatient(
-    @Param('status') status: StatusType,
+    @Param('status', StatusTypeValidationPipe) status: StatusType,
     @Session() session: SessionContainer,
     @Body() patientDTO: PatientDTO,
   ) {
@@ -45,15 +46,18 @@ export class TherapistController {
     );
   }
 
-  @Get('patients')
+  @Get('patients/:status')
   @UseGuards(new AuthGuard())
   async getPatientsFromTherapist(
+    @Param('status', StatusTypeValidationPipe) status: StatusType,
     @Session() session: SessionContainer,
   ): Promise<Patient[]> {
     const userId = session.getUserId();
 
-    const patients =
-      await this.therapistService.getPatientsFromTherapist(userId);
+    const patients = await this.therapistService.getPatientsFromTherapist(
+      userId,
+      status,
+    );
 
     if (patients) return patients;
     else throw new HttpException('Patients not found', HttpStatus.BAD_REQUEST);

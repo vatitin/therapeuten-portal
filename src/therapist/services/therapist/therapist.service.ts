@@ -25,9 +25,6 @@ export class TherapistService {
     therapistUUID: string,
     status: StatusType,
   ) {
-    if (!(status === 'W' || status === 'A' || status === 'F'))
-      throw new BadRequestException('Invalid status type');
-
     const patient = this.patientRepository.create(patientDTO);
     const therapist = await this.therapistRepository.findOneOrFail({
       where: { id: therapistUUID },
@@ -42,9 +39,9 @@ export class TherapistService {
     return this.therapistRepository.save(therapist);
   }
 
-  getPatientsFromTherapist(id: string) {
+  getPatientsFromTherapist(id: string, status: StatusType) {
     return this.patientRepository.find({
-      where: { therapist: { id } },
+      where: { therapist: { id }, status },
     });
   }
 }
