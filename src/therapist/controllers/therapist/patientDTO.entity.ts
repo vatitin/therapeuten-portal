@@ -16,5 +16,9 @@ export class PatientDTO {
 
   @IsString()
   @IsOptional()
+  phoneNumber: string;
+
+  @IsString()
+  @IsOptional()
   gender: GenderType;
 }

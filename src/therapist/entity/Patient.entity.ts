@@ -20,6 +20,9 @@ export class Patient {
   @Column({ length: 32, nullable: true })
   lastName: string;
 
+  @Column({ length: 32, nullable: true })
+  phoneNumber: string;
+
   @Column({ length: 1 })
   status: StatusType;
 
