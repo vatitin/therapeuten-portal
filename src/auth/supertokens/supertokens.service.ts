@@ -15,7 +15,8 @@ export class SupertokensService {
     private therapistService: TherapistService,
   ) {
     supertokens.init({
-      debug: true,
+      //enable logs
+      //debug: true,
       supertokens: {
         connectionURI: config.connectionURI,
         apiKey: config.apiKey,

@@ -16,10 +16,6 @@ export class TherapistService {
     private readonly therapistRepository: Repository<Therapist>,
   ) {}
 
-  findPatientById(id: number) {
-    return { a: id };
-  }
-
   async createPatient(
     patientDTO: PatientDTO,
     therapistUUID: string,
@@ -29,6 +25,10 @@ export class TherapistService {
     const therapist = await this.therapistRepository.findOneOrFail({
       where: { id: therapistUUID },
     });
+    if (!therapist) {
+      throw new BadRequestException('Therapist wurde nicht gefunden');
+    }
+    if (status === 'W') patient.addedAsWaitingDate = new Date();
     patient.status = status;
     patient.therapist = therapist;
     return this.patientRepository.save(patient);
@@ -39,9 +39,18 @@ export class TherapistService {
     return this.therapistRepository.save(therapist);
   }
 
-  getPatientsFromTherapist(id: string, status: StatusType) {
-    return this.patientRepository.find({
+  async getPatientsFromTherapist(id: string, status: StatusType) {
+    const patients = await this.patientRepository.find({
       where: { therapist: { id }, status },
+      order: {
+        addedAsWaitingDate: 'ASC',
+      },
     });
+
+    const patientsWithSequence = patients.map((patient, index) => ({
+      ...patient,
+      sequence: index + 1,
+    }));
+    return patientsWithSequence;
   }
 }

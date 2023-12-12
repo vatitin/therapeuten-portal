@@ -5,7 +5,6 @@ import {
   HttpException,
   HttpStatus,
   Param,
-  ParseIntPipe,
   Post,
   UseGuards,
   UsePipes,
@@ -24,12 +23,14 @@ import { StatusTypeValidationPipe } from './statusType.validation.pipe';
 export class TherapistController {
   constructor(private therapistService: TherapistService) {}
 
+  /*
   @Get('findPatient/:id')
   async findPatient(@Param('id', ParseIntPipe) id: number) {
     const patient = await this.therapistService.findPatientById(id);
     if (patient) return patient;
     else throw new HttpException('Patient not found', HttpStatus.BAD_REQUEST);
   }
+  */
 
   @Post('createPatient/:status')
   @UsePipes(ValidationPipe)

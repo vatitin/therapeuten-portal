@@ -26,6 +26,12 @@ export class Patient {
   @Column({ length: 32, nullable: true })
   gender: GenderType;
 
+  @Column({
+    type: 'timestamp',
+    nullable: true,
+  })
+  addedAsWaitingDate: Date | undefined;
+
   @ManyToOne(() => Therapist, (therapist) => therapist.patients)
   therapist: Therapist;
 }
