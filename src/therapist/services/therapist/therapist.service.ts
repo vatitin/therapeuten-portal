@@ -39,6 +39,14 @@ export class TherapistService {
     return this.therapistRepository.save(therapist);
   }
 
+  async getProfile(id: string) {
+    const therapist = await this.therapistRepository.findOneOrFail({
+      where: { id },
+    });
+    if (therapist) return therapist;
+    else throw new BadRequestException('Therapist could not be found');
+  }
+
   async getPatientsFromTherapist(id: string, status: StatusType) {
     const patients = await this.patientRepository.find({
       where: { therapist: { id }, status },

@@ -47,6 +47,12 @@ export class TherapistController {
     );
   }
 
+  @Get('myProfile')
+  @UseGuards(new AuthGuard())
+  async getProfile(@Session() session: SessionContainer) {
+    return await this.therapistService.getProfile(session.getUserId());
+  }
+
   @Get('patients/:status')
   @UseGuards(new AuthGuard())
   async getPatientsFromTherapist(
