@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PatientDTO } from '../../controllers/therapist/patientDTO.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Patient } from 'src/therapist/entity/Patient.entity';
+import { Patient, StatusType } from 'src/therapist/entity/Patient.entity';
 import { Repository } from 'typeorm';
 import { TherapistDTO } from 'src/therapist/controllers/therapist/therapistDTO.entity';
 import { Therapist } from 'src/therapist/entity/Therapist.entity';
@@ -20,8 +20,20 @@ export class TherapistService {
     return { a: id };
   }
 
-  createPatient(patientDTO: PatientDTO) {
+  async createPatient(
+    patientDTO: PatientDTO,
+    therapistUUID: string,
+    status: StatusType,
+  ) {
+    if (!(status === 'W' || status === 'A' || status === 'F'))
+      throw new BadRequestException('Invalid status type');
+
     const patient = this.patientRepository.create(patientDTO);
+    const therapist = await this.therapistRepository.findOneOrFail({
+      where: { id: therapistUUID },
+    });
+    patient.status = status;
+    patient.therapist = therapist;
     return this.patientRepository.save(patient);
   }
 

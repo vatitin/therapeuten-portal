@@ -2,6 +2,8 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Therapist } from './Therapist.entity';
 
 export type GenderType = 'M' | 'W' | 'D';
+// Active, Waiting, Former
+export type StatusType = 'A' | 'W' | 'F';
 
 @Entity()
 export class Patient {
@@ -17,6 +19,9 @@ export class Patient {
 
   @Column({ length: 32, nullable: true })
   lastName: string;
+
+  @Column({ length: 1 })
+  status: StatusType;
 
   @Column({ length: 32, nullable: true })
   gender: GenderType;

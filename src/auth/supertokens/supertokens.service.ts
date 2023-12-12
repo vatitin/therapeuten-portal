@@ -15,6 +15,7 @@ export class SupertokensService {
     private therapistService: TherapistService,
   ) {
     supertokens.init({
+      debug: true,
       supertokens: {
         connectionURI: config.connectionURI,
         apiKey: config.apiKey,
@@ -51,7 +52,7 @@ export class SupertokensService {
           },
         }),
         Session.init(),
-        Dashboard.init({ admins: ['sackmannva@gmail.com'] }),
+        Dashboard.init({ admins: ['admin@acme.com'] }),
       ],
     });
   }

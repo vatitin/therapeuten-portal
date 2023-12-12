@@ -17,7 +17,7 @@ import { PatientDTO } from './patientDTO.entity';
 import { AuthGuard } from 'src/auth/auth/auth.guard';
 import { Session } from 'src/auth/session/session.decorator';
 import { SessionContainer } from 'supertokens-node/recipe/session';
-import { Patient } from 'src/therapist/entity/Patient.entity';
+import { Patient, StatusType } from 'src/therapist/entity/Patient.entity';
 
 @Controller('therapist')
 export class TherapistController {
@@ -30,10 +30,19 @@ export class TherapistController {
     else throw new HttpException('Patient not found', HttpStatus.BAD_REQUEST);
   }
 
-  @Post('createPatient')
+  @Post('createPatient/:status')
   @UsePipes(ValidationPipe)
-  createPatient(@Body() patientDTO: PatientDTO) {
-    return this.therapistService.createPatient(patientDTO);
+  @UseGuards(new AuthGuard())
+  createPatient(
+    @Param('status') status: StatusType,
+    @Session() session: SessionContainer,
+    @Body() patientDTO: PatientDTO,
+  ) {
+    return this.therapistService.createPatient(
+      patientDTO,
+      session.getUserId(),
+      status,
+    );
   }
 
   @Get('patients')
