@@ -11,12 +11,12 @@ import { AuthModule } from './auth/auth.module';
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',
-      port: 3307,
+      port: 3306,
       username: 'myuser',
       password: 'myuserpassword',
       database: 'mydatabase',
       entities: [Therapist, Patient],
-      //todo set this to fale before production
+      //todo set this to false before production
       synchronize: true,
     }),
     AuthModule.forRoot({
