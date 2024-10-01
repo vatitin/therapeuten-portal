@@ -69,4 +69,15 @@ export class TherapistController {
     if (patients) return patients;
     else throw new HttpException('Patients not found', HttpStatus.BAD_REQUEST);
   }
+
+  @Get('patients/byId/:id')
+  @UseGuards(new AuthGuard())
+  async getPatient(
+    @Param('id') id: number,
+    @Session() session: SessionContainer,
+  ): Promise<Patient> {
+    const userId = session.getUserId();
+    return await this.therapistService.getPatient(id, userId);
+  }
+    
 }

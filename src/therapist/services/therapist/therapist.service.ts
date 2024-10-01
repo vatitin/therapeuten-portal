@@ -40,7 +40,7 @@ export class TherapistService {
   }
 
   async getProfile(id: string) {
-    const therapist = await this.therapistRepository.findOneOrFail({
+    const therapist = await this.therapistRepository.findOne({
       where: { id },
     });
     if (therapist) return therapist;
@@ -60,5 +60,16 @@ export class TherapistService {
       sequence: index + 1,
     }));
     return patientsWithSequence;
+  }
+
+  async getPatient(id: number, userId: string) {
+    const patient = await this.patientRepository.findOne({
+      where: 
+      {id}, 
+      relations: ['therapist'],
+    })
+    
+    if (!patient || patient.therapist.id !== userId) throw new BadRequestException('Patient could not be found');
+    return patient;
   }
 }
