@@ -5,6 +5,7 @@ import {
   HttpException,
   HttpStatus,
   Param,
+  Patch,
   Post,
   UseGuards,
   UsePipes,
@@ -31,6 +32,23 @@ export class TherapistController {
     else throw new HttpException('Patient not found', HttpStatus.BAD_REQUEST);
   }
   */
+
+  @Patch('updatePatient/:id/:status')
+  @UsePipes(ValidationPipe)
+  @UseGuards(new AuthGuard())
+  updatePatient(
+    @Param('id') id: number,
+    @Param('status', StatusTypeValidationPipe) status: StatusType,
+    @Session() session: SessionContainer,
+    @Body() patientDTO: PatientDTO,
+  ) {
+    return this.therapistService.updatePatient(
+      id,
+      patientDTO,
+      session.getUserId(),
+      status,
+    );
+  }
 
   @Post('createPatient/:status')
   @UsePipes(ValidationPipe)
