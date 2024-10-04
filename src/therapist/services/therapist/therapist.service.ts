@@ -34,6 +34,18 @@ export class TherapistService {
     return this.patientRepository.save(patient);
   }
 
+  async updatePatient(id: number, patientDTO: PatientDTO, userId: string, status: StatusType) {
+    const patient = await this.getPatient(id, userId);
+
+    if (patientDTO.firstName) patient.firstName = patientDTO.firstName;
+    if (patientDTO.lastName) patient.lastName = patientDTO.lastName;
+    if (patientDTO.email) patient.email = patientDTO.email;
+    if (patientDTO.phoneNumber) patient.phoneNumber = patientDTO.phoneNumber;
+    patient.status = status;
+
+    return await this.patientRepository.save(patient);
+  }
+
   createTherapist(therapistDTO: TherapistDTO) {
     const therapist = this.therapistRepository.create(therapistDTO);
     return this.therapistRepository.save(therapist);
