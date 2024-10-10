@@ -12,9 +12,10 @@ import { TherapistService } from 'src/therapist/services/therapist/therapist.ser
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Patient } from 'src/therapist/entity/Patient.entity';
 import { Therapist } from 'src/therapist/entity/Therapist.entity';
+import { PatientTherapist } from 'src/therapist/entity/PatientTherapist.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Patient, Therapist])],
+  imports: [TypeOrmModule.forFeature([Patient, Therapist, PatientTherapist])],
   providers: [SupertokensService, TherapistService],
   exports: [],
   controllers: [],

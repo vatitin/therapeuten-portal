@@ -1,10 +1,12 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PatientDTO } from '../../controllers/therapist/patientDTO.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Patient, StatusType } from 'src/therapist/entity/Patient.entity';
+import { Patient } from 'src/therapist/entity/Patient.entity';
 import { Repository } from 'typeorm';
 import { TherapistDTO } from 'src/therapist/controllers/therapist/therapistDTO.entity';
 import { Therapist } from 'src/therapist/entity/Therapist.entity';
+import { PatientTherapist, StatusType } from 'src/therapist/entity/PatientTherapist.entity';
+import { PatientTherapistDTO } from 'src/therapist/controllers/therapist/PatientTherapistDTO.entity';
 
 @Injectable()
 export class TherapistService {
@@ -14,6 +16,9 @@ export class TherapistService {
 
     @InjectRepository(Therapist)
     private readonly therapistRepository: Repository<Therapist>,
+
+    @InjectRepository(PatientTherapist)
+    private readonly patientTherapistRepository: Repository<PatientTherapist>,
   ) {}
 
   async createPatient(
@@ -21,34 +26,58 @@ export class TherapistService {
     therapistUUID: string,
     status: StatusType,
   ) {
-    const patient = this.patientRepository.create(patientDTO);
+    patientDTO.isRegistered = false;
+
     const therapist = await this.therapistRepository.findOneOrFail({
       where: { id: therapistUUID },
     });
+
     if (!therapist) {
       throw new BadRequestException('Therapist wurde nicht gefunden');
     }
-    if (status === 'W') patient.addedAsWaitingDate = new Date();
-    patient.status = status;
-    patient.therapist = therapist;
-    return this.patientRepository.save(patient);
+
+    const patient = await this.patientRepository.save(patientDTO);
+
+    const patientTherapistDTO: PatientTherapistDTO = {
+      therapist: therapist,
+      patient: patient,
+      status,
+      lastStatusChange: new Date(),
+    };
+
+    await this.patientTherapistRepository.save(patientTherapistDTO);
+    return patient;
   }
 
-  async updatePatient(id: number, patientDTO: PatientDTO, userId: string, status: StatusType) {
-    const patient = await this.getPatient(id, userId);
+  async findPatientTherapist(patientId: string, therapistId: string) {
+    const patientTherapist = await this.patientTherapistRepository.findOne({
+      where: {
+        patient: {id: patientId},
+        therapist: {id: therapistId},
+      }
+    })
+    if (!patientTherapist) throw new NotFoundException('Patient-Therapist relationship not found');
+    return patientTherapist;
+  }
 
+  async updatePatient(id: string, patientDTO: PatientDTO, userId: string, status: StatusType) {
+    const {patient, patientTherapist} = await this.getPatient(id, userId);
+    if (status) {
+      patientTherapist.status = status;
+      this.patientTherapistRepository.save(patientTherapist);
+    }
     if (patientDTO.firstName) patient.firstName = patientDTO.firstName;
     if (patientDTO.lastName) patient.lastName = patientDTO.lastName;
     if (patientDTO.email) patient.email = patientDTO.email;
     if (patientDTO.phoneNumber) patient.phoneNumber = patientDTO.phoneNumber;
-    patient.status = status;
 
     return await this.patientRepository.save(patient);
   }
 
-  createTherapist(therapistDTO: TherapistDTO) {
+  async createTherapist(therapistDTO: TherapistDTO, id: string) {
     const therapist = this.therapistRepository.create(therapistDTO);
-    return this.therapistRepository.save(therapist);
+    therapist.id = id;
+    return await this.therapistRepository.save(therapist);
   }
 
   async getProfile(id: string) {
@@ -60,28 +89,35 @@ export class TherapistService {
   }
 
   async getPatientsFromTherapist(id: string, status: StatusType) {
-    const patients = await this.patientRepository.find({
+    const patientTherapists: PatientTherapist[] = await this.patientTherapistRepository.find({
       where: { therapist: { id }, status },
+      relations: ['patient'],
       order: {
-        addedAsWaitingDate: 'ASC',
-      },
+        lastStatusChange: 'ASC',
+      }
     });
 
-    const patientsWithSequence = patients.map((patient, index) => ({
-      ...patient,
+    const patientsWithSequence = patientTherapists.map((patientTherapist, index) => ({
+      ...patientTherapist.patient,
       sequence: index + 1,
     }));
+
     return patientsWithSequence;
   }
 
-  async getPatient(id: number, userId: string) {
+  async getPatient(id: string, userId: string) {
     const patient = await this.patientRepository.findOne({
       where: 
-      {id}, 
-      relations: ['therapist'],
+        {id}, 
+    })
+    if (!patient) throw new NotFoundException('Patient could not be found');
+
+    const patientTherapist = await this.patientTherapistRepository.findOne({
+      where:
+        {patient: {id}, therapist: {id: userId}}
     })
     
-    if (!patient || patient.therapist.id !== userId) throw new BadRequestException('Patient could not be found');
-    return patient;
+    if (!patientTherapist) throw new NotFoundException('Patient-Therapist relationship could not be found');
+    return {patient, patientTherapist};
   }
 }

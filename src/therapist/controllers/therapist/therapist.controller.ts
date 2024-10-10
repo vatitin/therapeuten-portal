@@ -2,8 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  HttpException,
-  HttpStatus,
   Param,
   Patch,
   Post,
@@ -17,8 +15,9 @@ import { PatientDTO } from './patientDTO.entity';
 import { AuthGuard } from 'src/auth/auth/auth.guard';
 import { Session } from 'src/auth/session/session.decorator';
 import { SessionContainer } from 'supertokens-node/recipe/session';
-import { Patient, StatusType } from 'src/therapist/entity/Patient.entity';
+import { Patient } from 'src/therapist/entity/Patient.entity';
 import { StatusTypeValidationPipe } from './statusType.validation.pipe';
+import { StatusType } from 'src/therapist/entity/PatientTherapist.entity';
 
 @Controller('therapist')
 export class TherapistController {
@@ -28,8 +27,8 @@ export class TherapistController {
   @UsePipes(ValidationPipe)
   @UseGuards(new AuthGuard())
   updatePatient(
-    @Param('id') id: number,
-    @Param('status', StatusTypeValidationPipe) status: StatusType,
+    @Param('id') id: string,
+    @Param('status', new StatusTypeValidationPipe(false)) status: StatusType,
     @Session() session: SessionContainer,
     @Body() patientDTO: PatientDTO,
   ) {
@@ -45,7 +44,7 @@ export class TherapistController {
   @UsePipes(ValidationPipe)
   @UseGuards(new AuthGuard())
   createPatient(
-    @Param('status', StatusTypeValidationPipe) status: StatusType,
+    @Param('status', new StatusTypeValidationPipe) status: StatusType,
     @Session() session: SessionContainer,
     @Body() patientDTO: PatientDTO,
   ) {
@@ -65,7 +64,7 @@ export class TherapistController {
   @Get('patients/:status')
   @UseGuards(new AuthGuard())
   async getPatientsFromTherapist(
-    @Param('status', StatusTypeValidationPipe) status: StatusType,
+    @Param('status', new StatusTypeValidationPipe) status: StatusType,
     @Session() session: SessionContainer,
   ): Promise<Patient[]> {
     const userId = session.getUserId();
@@ -75,18 +74,18 @@ export class TherapistController {
       status,
     );
 
-    if (patients) return patients;
-    else throw new HttpException('Patients not found', HttpStatus.BAD_REQUEST);
+    return patients;
   }
 
   @Get('patients/byId/:id')
   @UseGuards(new AuthGuard())
   async getPatient(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Session() session: SessionContainer,
   ): Promise<Patient> {
     const userId = session.getUserId();
-    return await this.therapistService.getPatient(id, userId);
+    const {patient, patientTherapist} = await this.therapistService.getPatient(id, userId);
+    return patient;
   }
     
 }

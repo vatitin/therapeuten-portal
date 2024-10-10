@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Therapist } from './therapist/entity/Therapist.entity';
 import { Patient } from './therapist/entity/Patient.entity';
 import { AuthModule } from './auth/auth.module';
+import { PatientTherapist } from './therapist/entity/PatientTherapist.entity';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { AuthModule } from './auth/auth.module';
       username: 'myuser',
       password: 'myuserpassword',
       database: 'mydatabase',
-      entities: [Therapist, Patient],
+      entities: [Therapist, Patient, PatientTherapist],
       //todo set this to false before production
       synchronize: true,
     }),
