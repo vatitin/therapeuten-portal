@@ -8,12 +8,4 @@ export class TherapistDTO {
   @IsEmail()
   @IsNotEmpty()
   email: string | undefined;
-
-  /*
-  @IsString()
-  firstName: string;
-
-  @IsString()
-  lastName: string;
-  */
 }
