@@ -1,24 +1,28 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 import { GenderType } from 'src/therapist/entity/Patient.entity';
 
 export class PatientDTO {
-  @IsString()
-  @IsOptional()
-  email: string;
+    @IsString()
+    @IsOptional()
+    email: string;
 
-  @IsString()
-  @IsOptional()
-  firstName: string;
+    @IsBoolean()
+    @IsOptional()
+    isRegistered: boolean;
 
-  @IsString()
-  @IsOptional()
-  lastName: string;
+    @IsString()
+    @IsOptional()
+    firstName: string;
 
-  @IsString()
-  @IsOptional()
-  phoneNumber: string;
+    @IsString()
+    @IsOptional()
+    lastName: string;
 
-  @IsString()
-  @IsOptional()
-  gender: GenderType;
+    @IsString()
+    @IsOptional()
+    phoneNumber: string;
+
+    @IsString()
+    @IsOptional()
+    gender: GenderType;
 }

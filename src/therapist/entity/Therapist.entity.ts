@@ -1,23 +1,11 @@
-import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
-import { Patient } from './Patient.entity';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class Therapist {
-  @Column('uuid')
-  @PrimaryColumn()
-  id: string;
+    @Column('uuid')
+    @PrimaryColumn()
+    id: string;
 
-  @Column({ unique: true, length: 32, nullable: false })
-  email: string;
-
-  /*
-  @Column({ length: 32 })
-  firstName: string;
-
-  @Column({ length: 32 })
-  lastName: string;
-*/
-
-  @OneToMany(() => Patient, (patient) => patient.therapist)
-  patients: Patient[];
+    @Column({ unique: true, length: 32, nullable: false })
+    email: string;
 }
