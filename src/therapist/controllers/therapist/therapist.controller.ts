@@ -1,6 +1,7 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
     Param,
     Patch,
@@ -41,15 +42,25 @@ export class TherapistController {
         );
     }
 
+    @Delete('removePatient/:id')
+    @UsePipes(ValidationPipe)
+    @UseGuards(new AuthGuard())
+    async removePatient(
+        @Param('id') id: string,
+        @Session() session: SessionContainer,
+    ) {
+        return await this.therapistService.removePatient(id, session.getUserId())
+    }
+
     @Post('createPatient/:status')
     @UsePipes(ValidationPipe)
     @UseGuards(new AuthGuard())
-    createPatient(
+    async createPatient(
         @Param('status', new StatusTypeValidationPipe()) status: StatusType,
         @Session() session: SessionContainer,
         @Body() patientDTO: PatientDTO,
     ) {
-        return this.therapistService.createPatient(
+        return await this.therapistService.createPatient(
             patientDTO,
             session.getUserId(),
             status,
