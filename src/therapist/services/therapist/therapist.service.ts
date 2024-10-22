@@ -1,5 +1,6 @@
 import {
     BadRequestException,
+    HttpStatus,
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
@@ -139,5 +140,15 @@ export class TherapistService {
                 'Patient-Therapist relationship could not be found',
             );
         return { patient, patientTherapist };
+    }
+
+    async removePatient(patientId: string, therapistId: string) {
+        const { patient, patientTherapist } = await this.getPatient(patientId, therapistId);
+        await this.patientTherapistRepository.remove(patientTherapist)
+        if(patient.isRegistered) {
+            await this.patientRepository.remove(patient);
+            return { status: HttpStatus.OK, message: 'Patient-Therapist relation and patient removed' };
+        }
+        return { status: HttpStatus.OK, message: 'Patient-Therapist relation removed' };
     }
 }
