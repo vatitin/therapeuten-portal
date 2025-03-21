@@ -1,50 +1,47 @@
-import {
-    DynamicModule,
-    MiddlewareConsumer,
-    Module,
-    NestModule,
-} from '@nestjs/common';
-
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Patient } from 'src/therapist/entity/Patient.entity';
 import { PatientTherapist } from 'src/therapist/entity/PatientTherapist.entity';
 import { Therapist } from 'src/therapist/entity/Therapist.entity';
 import { TherapistService } from 'src/therapist/services/therapist/therapist.service';
-import { AuthMiddleware } from './auth/auth.middleware';
-import { AuthModuleConfig, ConfigInjectionToken } from './config.interface';
-import { SupertokensService } from './supertokens/supertokens.service';
+import {
+  KeycloakConnectModule,
+  AuthGuard,
+  RoleGuard,
+  TokenValidation,
+  PolicyEnforcementMode,
+} from 'nest-keycloak-connect';
+import { APP_GUARD } from '@nestjs/core';
+
+const clientSecret = process.env.KEYCLOAK_CLIENT_SECRET;
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Patient, Therapist, PatientTherapist])],
-    providers: [SupertokensService, TherapistService],
-    exports: [],
-    controllers: [],
+  imports: [
+    //todo set appropriate token lifetime regarding Offline token validation
+    KeycloakConnectModule.register({
+      authServerUrl: 'http://localhost:8080',
+      realm: 'patient-therapist-platform',
+      clientId: 'backend-client',
+      secret: clientSecret ?? '',
+      //todo change permissive to sth else 
+      policyEnforcement: PolicyEnforcementMode.PERMISSIVE,
+      //todo maybe user ONLINE, needs to be checked
+      tokenValidation: TokenValidation.OFFLINE,
+    }),
+    TypeOrmModule.forFeature([Patient, Therapist, PatientTherapist]),
+  ],
+  providers: [
+    TherapistService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RoleGuard,
+    },
+  ],
+  exports: [KeycloakConnectModule],
+  controllers: [],
 })
-export class AuthModule implements NestModule {
-    configure(consumer: MiddlewareConsumer) {
-        consumer.apply(AuthMiddleware).forRoutes('*');
-    }
-
-    static forRoot({
-        connectionURI,
-        apiKey,
-        appInfo,
-    }: AuthModuleConfig): DynamicModule {
-        return {
-            providers: [
-                {
-                    useValue: {
-                        appInfo,
-                        connectionURI,
-                        apiKey,
-                    },
-                    provide: ConfigInjectionToken,
-                },
-                SupertokensService,
-            ],
-            exports: [],
-            imports: [],
-            module: AuthModule,
-        };
-    }
-}
+export class AuthModule {}
