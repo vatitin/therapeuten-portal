@@ -1,37 +1,35 @@
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
-import supertokens from 'supertokens-node';
 import { AppModule } from './app.module';
-import { SupertokensExceptionFilter } from './auth/auth/auth.filter';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
+    //todo check if actually to use validation pipe globally
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
     app.use(
-        helmet.contentSecurityPolicy({
-            directives: {
-                defaultSrc: ["'self'"],
-                scriptSrc: [
-                    "'self'",
-                    "'unsafe-inline'",
-                    'https://cdn.jsdelivr.net/gh/supertokens/',
-                ],
-                imgSrc: ['https://cdn.jsdelivr.net/gh/supertokens/'],
+        helmet({
+            contentSecurityPolicy: {
+                directives: {
+                    defaultSrc: ["'self'"],
+                    scriptSrc: ["'self'", "'unsafe-inline'"],
+                    imgSrc: ["'self'"],
+                },
             },
         }),
     );
 
-    //todo implement prefix
     //app.setGlobalPrefix('api');
+
     app.enableCors({
-        origin: ['http://localhost:3000'],
+        origin: ['http://localhost:3000'], // todo adjust for production
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-        allowedHeaders: ['content-type', ...supertokens.getAllCORSHeaders()],
+        allowedHeaders: ['content-type', 'authorization'],
         credentials: true,
     });
 
-    app.useGlobalFilters(new SupertokensExceptionFilter());
-
     await app.listen(3001);
 }
+
 bootstrap();

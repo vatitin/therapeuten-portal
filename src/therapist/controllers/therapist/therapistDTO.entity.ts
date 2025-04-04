@@ -1,7 +1,7 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsUUID } from 'class-validator';
 
 export class TherapistDTO {
-    @IsEmail()
+    @IsUUID()
     @IsNotEmpty()
-    email: string | undefined;
+    KeycloakId: string;
 }

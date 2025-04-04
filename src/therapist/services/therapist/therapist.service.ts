@@ -29,16 +29,26 @@ export class TherapistService {
         private readonly patientTherapistRepository: Repository<PatientTherapist>,
     ) {}
 
+    async findOrCreateTherapist(keycloakId: string) {
+        var therapist = await this.therapistRepository.findOne({
+            where: { keycloakId },
+        });
+        
+        if (!therapist) {
+            therapist = this.therapistRepository.create({keycloakId});
+            therapist = await this.therapistRepository.save(therapist);
+        }
+
+        return therapist;
+    }
+
     async createPatient(
         patientDTO: PatientDTO,
-        therapistUUID: string,
+        therapistKeycloakId: string,
         status: StatusType,
     ) {
         patientDTO.isRegistered = false;
-
-        const therapist = await this.therapistRepository.findOneOrFail({
-            where: { id: therapistUUID },
-        });
+        const therapist = await this.findOrCreateTherapist(therapistKeycloakId);
 
         if (!therapist) {
             throw new BadRequestException('Therapist wurde nicht gefunden');
@@ -74,10 +84,10 @@ export class TherapistService {
     async updatePatient(
         id: string,
         patientDTO: PatientDTO,
-        userId: string,
+        keycloakId: string,
         status: StatusType,
     ) {
-        const { patient, patientTherapist } = await this.getPatient(id, userId);
+        const { patient, patientTherapist } = await this.getPatient(id, keycloakId);
         if (status) {
             patientTherapist.status = status;
             this.patientTherapistRepository.save(patientTherapist);
@@ -91,24 +101,18 @@ export class TherapistService {
         return await this.patientRepository.save(patient);
     }
 
-    async createTherapist(therapistDTO: TherapistDTO, id: string) {
-        const therapist = this.therapistRepository.create(therapistDTO);
-        therapist.id = id;
-        return await this.therapistRepository.save(therapist);
+    async getProfile(keycloakUser: KeycloakUser) {
+        if(!keycloakUser) throw new BadRequestException('Therapist could not be found');
+
+        const {family_name, given_name, email} = keycloakUser
+        const profile = {family_name, given_name, email};
+        return profile 
     }
 
-    async getProfile(id: string) {
-        const therapist = await this.therapistRepository.findOne({
-            where: { id },
-        });
-        if (therapist) return therapist;
-        else throw new BadRequestException('Therapist could not be found');
-    }
-
-    async getPatientsFromTherapist(id: string, status: StatusType) {
+    async getPatientsFromTherapist(keycloakId: string, status: StatusType) {
         const patientTherapists: PatientTherapist[] =
             await this.patientTherapistRepository.find({
-                where: { therapist: { id }, status },
+                where: { therapist: { keycloakId }, status },
                 relations: ['patient'],
                 order: {
                     lastStatusChange: 'ASC',
@@ -125,14 +129,14 @@ export class TherapistService {
         return patientsWithSequence;
     }
 
-    async getPatient(id: string, userId: string) {
+    async getPatient(id: string, keycloakId: string) {
         const patient = await this.patientRepository.findOne({
             where: { id },
         });
         if (!patient) throw new NotFoundException('Patient could not be found');
 
         const patientTherapist = await this.patientTherapistRepository.findOne({
-            where: { patient: { id }, therapist: { id: userId } },
+            where: { patient: { id }, therapist: { keycloakId } },
         });
 
         if (!patientTherapist)

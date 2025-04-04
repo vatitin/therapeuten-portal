@@ -1,11 +1,12 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Therapist {
     @Column('uuid')
-    @PrimaryColumn()
+    @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column({ unique: true, length: 32, nullable: false })
-    email: string;
+    @Column('uuid')
+    keycloakId: string;
+
 }

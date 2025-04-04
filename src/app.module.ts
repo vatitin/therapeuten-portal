@@ -20,20 +20,7 @@ import { TherapistModule } from './therapist/therapist.module';
             //todo set this to false before production
             synchronize: true,
         }),
-        AuthModule.forRoot({
-            //connectionURI: 'https://try.supertokens.com',
-            connectionURI:
-                'https://st-dev-6e70f420-979d-11ee-9cd1-2f6e5d2f828b.aws.supertokens.io',
-            apiKey: '8x9MINFlDJn4FO0T8O2PP-fYPj',
-            appInfo: {
-                // Learn more about this on https://supertokens.com/docs/emailpassword/appinfo
-                appName: 'Queue app',
-                apiDomain: 'http://localhost:3001',
-                websiteDomain: 'http://localhost:3000',
-                apiBasePath: '/auth',
-                websiteBasePath: '/auth',
-            },
-        }),
+        AuthModule,
     ],
     controllers: [],
     providers: [],
