@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PatientTherapistDTO } from 'src/therapist/controllers/therapist/PatientTherapistDTO.entity';
-import { TherapistDTO } from 'src/therapist/controllers/therapist/therapistDTO.entity';
 import { Patient } from 'src/therapist/entity/Patient.entity';
 import {
     PatientTherapist,
@@ -30,7 +29,7 @@ export class TherapistService {
     ) {}
 
     async findOrCreateTherapist(keycloakId: string) {
-        var therapist = await this.therapistRepository.findOne({
+        let therapist = await this.therapistRepository.findOne({
             where: { keycloakId },
         });
         

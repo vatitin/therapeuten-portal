@@ -64,8 +64,8 @@ export class TherapistController {
     }
 
     @Get('myProfile')
-    async getProfile(@AuthenticatedUser() user: KeycloakUser) {
-        return await this.therapistService.getProfile(user);
+    async getProfile(@AuthenticatedUser() therapist: KeycloakUser) {
+        return await this.therapistService.getProfile(therapist);
     }
 
     @Get('patients/:status')

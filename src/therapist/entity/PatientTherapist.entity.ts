@@ -3,9 +3,9 @@ import { Patient } from './Patient.entity';
 import { Therapist } from './Therapist.entity';
 
 export enum StatusType {
-    Active = 'active',
-    Inactive = 'inactive',
-    Waiting = 'waiting',
+    ACTIVE = 'active',
+    INACTIVE = 'inactive',
+    WAITING = 'waiting',
 }
 
 @Entity()
