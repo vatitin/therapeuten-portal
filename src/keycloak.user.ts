@@ -4,4 +4,3 @@ interface KeycloakUser {
     given_name?: string;
     family_name?: string;
 }
-  

@@ -14,9 +14,9 @@ export class StatusTypeValidationPipe
 
         if (
             !(
-                value === StatusType.Active ||
-                value === StatusType.Waiting ||
-                value === StatusType.Inactive
+                value === StatusType.ACTIVE ||
+                value === StatusType.WAITING ||
+                value === StatusType.INACTIVE
             )
         ) {
             throw new BadRequestException('Invalid status type');
