@@ -32,9 +32,9 @@ export class TherapistService {
         let therapist = await this.therapistRepository.findOne({
             where: { keycloakId },
         });
-        
+
         if (!therapist) {
-            therapist = this.therapistRepository.create({keycloakId});
+            therapist = this.therapistRepository.create({ keycloakId });
             therapist = await this.therapistRepository.save(therapist);
         }
 
@@ -86,7 +86,10 @@ export class TherapistService {
         keycloakId: string,
         status: StatusType,
     ) {
-        const { patient, patientTherapist } = await this.getPatient(id, keycloakId);
+        const { patient, patientTherapist } = await this.getPatient(
+            id,
+            keycloakId,
+        );
         if (status) {
             patientTherapist.status = status;
             this.patientTherapistRepository.save(patientTherapist);
@@ -101,11 +104,12 @@ export class TherapistService {
     }
 
     async getProfile(keycloakUser: KeycloakUser) {
-        if(!keycloakUser) throw new BadRequestException('Therapist could not be found');
+        if (!keycloakUser)
+            throw new BadRequestException('Therapist could not be found');
 
-        const {family_name, given_name, email} = keycloakUser
-        const profile = {family_name, given_name, email};
-        return profile 
+        const { family_name, given_name, email } = keycloakUser;
+        const profile = { family_name, given_name, email };
+        return profile;
     }
 
     async getPatientsFromTherapist(keycloakId: string, status: StatusType) {
@@ -146,12 +150,21 @@ export class TherapistService {
     }
 
     async removePatient(patientId: string, therapistId: string) {
-        const { patient, patientTherapist } = await this.getPatient(patientId, therapistId);
-        await this.patientTherapistRepository.remove(patientTherapist)
-        if(patient.isRegistered) {
+        const { patient, patientTherapist } = await this.getPatient(
+            patientId,
+            therapistId,
+        );
+        await this.patientTherapistRepository.remove(patientTherapist);
+        if (patient.isRegistered) {
             await this.patientRepository.remove(patient);
-            return { status: HttpStatus.OK, message: 'Patient-Therapist relation and patient removed' };
+            return {
+                status: HttpStatus.OK,
+                message: 'Patient-Therapist relation and patient removed',
+            };
         }
-        return { status: HttpStatus.OK, message: 'Patient-Therapist relation removed' };
+        return {
+            status: HttpStatus.OK,
+            message: 'Patient-Therapist relation removed',
+        };
     }
 }

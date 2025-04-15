@@ -11,12 +11,12 @@ import {
     ValidationPipe,
 } from '@nestjs/common';
 
+import { AuthenticatedUser, AuthGuard } from 'nest-keycloak-connect';
 import { Patient } from 'src/therapist/entity/Patient.entity';
 import { StatusType } from 'src/therapist/entity/PatientTherapist.entity';
 import { TherapistService } from '../../services/therapist/therapist.service';
 import { PatientDTO } from './patientDTO.entity';
 import { StatusTypeValidationPipe } from './statusType.validation.pipe';
-import { AuthenticatedUser, AuthGuard } from 'nest-keycloak-connect';
 
 @UseGuards(AuthGuard)
 @Controller('therapist')
@@ -46,7 +46,7 @@ export class TherapistController {
         @Param('id') id: string,
         @AuthenticatedUser() user: KeycloakUser,
     ) {
-        return await this.therapistService.removePatient(id, user.sub)
+        return await this.therapistService.removePatient(id, user.sub);
     }
 
     @Post('createPatient/:status')
@@ -73,7 +73,6 @@ export class TherapistController {
         @Param('status', new StatusTypeValidationPipe()) status: StatusType,
         @AuthenticatedUser() user: KeycloakUser,
     ): Promise<Patient[]> {
-
         const patients = await this.therapistService.getPatientsFromTherapist(
             user.sub,
             status,
@@ -88,8 +87,7 @@ export class TherapistController {
         @AuthenticatedUser() user: KeycloakUser,
     ): Promise<Patient> {
         const userId = user.sub;
-        const { patient } =
-            await this.therapistService.getPatient(id, userId);
+        const { patient } = await this.therapistService.getPatient(id, userId);
         return patient;
     }
 }
