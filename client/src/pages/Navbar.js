@@ -1,32 +1,124 @@
-// Navbar.js
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { therapistProfile } from '../endpoints';
 import { AppRoutes } from '../constants';
-import KeycloakService from '../services/KeycloakService';
+import KeycloakPatientService from '../services/KeycloakPatientService';
 import apiClient from '../services/APIService';
+import AuthService from '../services/AuthService';
+import { useAuth } from '../hooks/useAuth';
+
+
+function GuestNavbar({ onLoginPatient, onLoginTherapist }) { 
+  return (  
+    <>
+      <li className="nav-item">
+        <Link 
+          onClick={onLoginPatient}
+          to="/"
+          className="nav-link active"
+          aria-current="page"
+        >
+          Login
+        </Link>
+      </li>
+      <li className="nav-item">
+        <Link
+          onClick={onLoginTherapist}
+          to="/auth"
+          className="nav-link active"
+          aria-current="page"
+        >
+          Therapeuten-Anmeldung
+        </Link>
+      </li>
+    </>
+  )
+ }
+
+function PatientNavbar({ email, onLogout }) {
+  return (
+    <>
+    <li className="nav-item">
+      <button
+        type="submit"
+        onClick={onLogout}
+        className="nav-link btn btn-link"
+      >
+        Logout
+      </button>
+    </li>
+    <li className="nav-item">
+      <Link
+        to="/myProfile"
+        className="nav-link active"
+        aria-current="page"
+      >
+        {email}
+      </Link>
+    </li>
+  </>
+  )
+ }
+
+
+function TherapistNavbar({ email, onLogout}) { 
+  return (
+    <>
+    <li className="nav-item">
+      <Link
+        to={AppRoutes.myWaitingPatients}
+        className="nav-link active"
+        aria-current="page"
+      >
+        Warteliste
+      </Link>
+    </li>
+    <li className="nav-item">
+      <Link
+        to={AppRoutes.myActivePatients}
+        className="nav-link active"
+        aria-current="page"
+      >
+        Patienten
+      </Link>
+    </li>
+
+    <li className="nav-item">
+      <button
+        type="submit"
+        onClick={onLogout}
+        className="nav-link btn btn-link"
+      >
+        Logout
+      </button>
+    </li>
+    <li className="nav-item">
+      <Link
+        to="/myProfile"
+        className="nav-link active"
+        aria-current="page"
+      >
+        {email}
+      </Link>
+    </li>
+  </>
+  )
+ }
 
 const Navbar = () => {
-  const userId = KeycloakService.getUserId();
-  const [email, setEmail] = useState(null)
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await apiClient.get(therapistProfile);
-        setEmail(response.data.email);
-      } catch (error) {
-        console.error('Error fetching therapist profile:', error);
-      }
-    };
+  const {
+    ready,
+    role,
+    email,
+    loginPatient,
+    loginTherapist,
+    logout
+  } = useAuth();
 
-    fetchProfile();
-  }, []);
+  if(!ready) return null;
 
-  const onLogoutClick = () => {
-    KeycloakService.logout();
-    window.location.href = '/';
-  };
+  console.log("role: " + role)
 
   return (
     <nav
@@ -41,64 +133,15 @@ const Navbar = () => {
                 Home
               </Link>
             </li>
-            {userId && (
-              <>
-                <li className="nav-item">
-                  <Link
-                    to={AppRoutes.myWaitingPatients}
-                    className="nav-link active"
-                    aria-current="page"
-                  >
-                    Warteliste
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link
-                    to={AppRoutes.myActivePatients}
-                    className="nav-link active"
-                    aria-current="page"
-                  >
-                    Patienten
-                  </Link>
-                </li>
-              </>
-            )}
+
+            { role === 'guest' && <GuestNavbar onLoginPatient={loginPatient} onLoginTherapist={loginTherapist} /> }
+
+            { role === 'patient' && <PatientNavbar email={email} onLogout={logout} /> }
+
+            { role === 'therapist' && <TherapistNavbar email={email} onLogout={logout} /> }
+
           </ul>
           <ul className="navbar-nav ms-auto">
-            {userId ? (
-              <>
-                <li className="nav-item">
-                  <button
-                    type="submit"
-                    onClick={onLogoutClick}
-                    className="nav-link btn btn-link"
-                  >
-                    Logout
-                  </button>
-                </li>
-                <li className="nav-item">
-                  <Link
-                    to="/myProfile"
-                    className="nav-link active"
-                    aria-current="page"
-                  >
-                    {email}
-                  </Link>
-                </li>
-              </>
-            ) : (
-              <>
-                <li className="nav-item">
-                  <Link
-                    to="/auth"
-                    className="nav-link active"
-                    aria-current="page"
-                  >
-                    Anmelden
-                  </Link>
-                </li>
-              </>
-            )}
           </ul>
         </div>
       </div>

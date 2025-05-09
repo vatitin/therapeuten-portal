@@ -7,25 +7,8 @@ import { Patient } from './pages/therapist/Patient';
 import { MyPatients } from './pages/therapist/MyPatients';
 import { Profile } from './pages/therapist/Profile';
 import { PageNotFound } from './pages/PageNotFound';
-import KeycloakService from './services/KeycloakService';
 
 function App() {
-  const [authenticated, setAuthenticated] = useState(false);
-  const isRunning = useRef(false);
-
-  useEffect(() => {
-
-    if (isRunning.current) return;
-    isRunning.current = true;
-
-    KeycloakService.initKeycloak(() => {
-      setAuthenticated(true);
-    });
-  }, []);
-
-  if (!authenticated) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <div className="App">

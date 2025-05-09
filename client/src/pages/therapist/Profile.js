@@ -2,13 +2,13 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { therapistProfile } from '../../endpoints';
-import keycloakService from '../../services/KeycloakService';
+import AuthService from '../../services/AuthService';
 import apiClient from '../../services/APIService';
 
 function Profile() {
   const navigate = useNavigate();
 
-  const userId = keycloakService.getUserId;
+  const userId = AuthService.getUserId;
   const [therapist, setTherapist] = useState([]);
 
   useEffect(() => {

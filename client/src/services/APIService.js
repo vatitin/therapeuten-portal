@@ -1,5 +1,5 @@
 import axios from 'axios';
-import KeycloakService from './KeycloakService';
+import AuthService from './AuthService';
 
 const apiClient = axios.create({
   headers: {
@@ -10,7 +10,7 @@ const apiClient = axios.create({
 
 //todo if token expired, handle it
 apiClient.interceptors.request.use(async (config) => {
-  const token = await KeycloakService.getToken({
+  const token = await AuthService.getToken({
     audience: 'backend-client',
     scope: 'openid email profile roles',
     preferred_username: "service-account-backend-client",
