@@ -11,7 +11,7 @@ import {
     ValidationPipe,
 } from '@nestjs/common';
 
-import { AuthenticatedUser, AuthGuard } from 'nest-keycloak-connect';
+import { AuthenticatedUser, AuthGuard, Roles } from 'nest-keycloak-connect';
 import { Patient } from 'src/therapist/entity/Patient.entity';
 import { StatusType } from 'src/therapist/entity/PatientTherapist.entity';
 import { TherapistService } from '../../services/therapist/therapist.service';
