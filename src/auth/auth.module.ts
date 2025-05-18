@@ -13,8 +13,6 @@ import { PatientTherapist } from 'src/therapist/entity/PatientTherapist.entity';
 import { Therapist } from 'src/therapist/entity/Therapist.entity';
 import { TherapistService } from 'src/therapist/services/therapist/therapist.service';
 
-const clientSecret = process.env.KEYCLOAK_CLIENT_SECRET;
-
 @Module({
     imports: [
         //todo set appropriate token lifetime regarding Offline token validation
@@ -22,11 +20,11 @@ const clientSecret = process.env.KEYCLOAK_CLIENT_SECRET;
             authServerUrl: 'http://localhost:8080',
             realm: 'patient-therapist-platform',
             clientId: 'backend-client',
-            secret: clientSecret ?? '',
+            secret: process.env.KEYCLOAK_CLIENT_SECRET ?? '',
             //todo change permissive to sth else
             policyEnforcement: PolicyEnforcementMode.PERMISSIVE,
             //todo maybe user ONLINE, needs to be checked
-            tokenValidation: TokenValidation.OFFLINE,
+            tokenValidation: TokenValidation.ONLINE,
         }),
         TypeOrmModule.forFeature([Patient, Therapist, PatientTherapist]),
     ],
