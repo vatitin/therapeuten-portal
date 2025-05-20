@@ -6,6 +6,7 @@ import { Patient } from './components/Patient';
 import { MyPatients } from './components/MyPatients';
 import { Profile } from './components/Profile';
 import { PageNotFound } from './components/PageNotFound';
+import { RegistrationForm } from './components/RegistrationForm';
 
 function App() {
 
@@ -22,6 +23,7 @@ function App() {
           <Route path="/patient/:id" element={<Patient />} />
           <Route path="/myPatients/:patientStatus" element={<MyPatients />} />
           <Route path="/myProfile" element={<Profile />} />
+          <Route path="/register" element={<RegistrationForm />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </Router>
