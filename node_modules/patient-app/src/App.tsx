@@ -1,5 +1,6 @@
 import { BrowserRouter } from "react-router-dom"
-import { Navbar } from "./pages/Navbar"
+import { Navbar } from "./components/Navbar"
+import { Map } from "./components/Map"
 
 function App() {
   return (
@@ -9,10 +10,8 @@ function App() {
       <div>    
         <h1>Patient App</h1>
         <p>Welcome to the Patient App!</p>
-        <p>This is a simple React application.</p>
-        <p>Feel free to explore and modify the code!</p>
-        <p>Enjoy codinggg!</p>
       </div>
+      <Map />
     </BrowserRouter>
 
     </>

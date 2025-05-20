@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { therapistProfile } from '../endpoints';
-//import AuthService from '../../../../packages/services/AuthService';
 import apiClient from '../APIService';
 
 function Profile() {

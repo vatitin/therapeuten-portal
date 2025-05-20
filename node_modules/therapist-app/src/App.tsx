@@ -1,11 +1,11 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Navbar } from './pages/Navbar';
-import { Home } from './pages/Home';
-import CreatePatient from './pages/CreatePatient';
-import { Patient } from './pages/Patient';
-import { MyPatients } from './pages/MyPatients';
-import { Profile } from './pages/Profile';
-import { PageNotFound } from './pages/PageNotFound';
+import { Navbar } from './components/Navbar';
+import { Home } from './components/Home';
+import CreatePatient from './components/CreatePatient';
+import { Patient } from './components/Patient';
+import { MyPatients } from './components/MyPatients';
+import { Profile } from './components/Profile';
+import { PageNotFound } from './components/PageNotFound';
 
 function App() {
 
