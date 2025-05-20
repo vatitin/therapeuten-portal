@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { therapistProfile } from '../endpoints';
-import apiClient from '../APIService';
+import createApiClient from '../APIService';
+import keycloak from '../keycloak';
 
 function Profile() {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ function Profile() {
 
   useEffect(() => {
     try {
+      const apiClient = createApiClient(keycloak?.token ?? "");
       apiClient.get(therapistProfile).then((response) => {
         setTherapist(response.data);
       });

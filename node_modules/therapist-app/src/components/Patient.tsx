@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { patientById } from '../endpoints';
-import apiClient from '../APIService';
+import createApiClient from '../APIService';
 import type { PatientType } from '../types/patient.types';
+import keycloak from '../keycloak';
 
 function Patient() {
   const { id } = useParams();
@@ -14,6 +15,8 @@ function Patient() {
         console.warn('No ID provided');
         return;
       }
+      //todo check if keycloak is initialized and authenticated
+      const apiClient = createApiClient(keycloak?.token ?? "");
       const response = await apiClient.get(patientById(Number(id)))
       setPatientObject(response.data) 
     }
