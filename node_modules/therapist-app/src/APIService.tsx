@@ -11,9 +11,7 @@ const createApiClient = (token: string) => {
   client.interceptors.request.use((config) => {
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-    } else {
-      console.error('No token available');
-    }
+    } 
     return config;
   }, (error) => {
     return Promise.reject(error);

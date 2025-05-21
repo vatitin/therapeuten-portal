@@ -17,3 +17,7 @@ export const updatePatient = (id: number, status: string) =>
 
 export const addPatientWithStatus = (status: string) =>
   `${THERAPIST_URL}/createPatient/${status}`;
+
+export const setTherapistData = `${THERAPIST_URL}/setData`;
+
+export const hasLocalTherapist =`${THERAPIST_URL}/hasLocalTherapist`;

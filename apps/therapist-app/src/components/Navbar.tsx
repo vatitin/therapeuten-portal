@@ -1,151 +1,77 @@
+import { Button, Group, Anchor, Flex, Box, Text } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import { AppRoutes } from '../constants';
-import { useKeycloak } from '@react-keycloak/web'
+import { useKeycloak } from '@react-keycloak/web';
+import { useUserStatus } from './useUserStatus';
 
-
-// todo check what loginPatient: any does? what type does it have?
 function GuestNavbar({ onLoginTherapist }: { onLoginTherapist: () => void }) {
-  
-  return (  
-    <>
-      <li className="nav-item">
-        <Link 
-          to="http://localhost:5173/"
-          className="nav-link active"
-          aria-current="page"
-        >
-          Login
-        </Link>
-      </li>
-      <li className="nav-item">
-        <Link
-          onClick={(e) => {
-            e.preventDefault();
-            onLoginTherapist();
-          }}
-          to="/"
-          className="nav-link active"
-          aria-current="page"
-        >
-          Therapeuten-Anmeldung
-        </Link>
-      </li>
-    </>
-  )
- }
-
-// todo use in patient-app
-// function PatientNavbar({ email, onLogout }) {
-//   return (
-//     <>
-//     <li className="nav-item">
-//       <button
-//         type="submit"
-//         onClick={onLogout}
-//         className="nav-link btn btn-link"
-//       >
-//         Logout
-//       </button>
-//     </li>
-//     <li className="nav-item">
-//       <Link
-//         to="/myProfile"
-//         className="nav-link active"
-//         aria-current="page"
-//       >
-//         {email}
-//       </Link>
-//     </li>
-//   </>
-//   )
-//  }
-
-
-function TherapistNavbar({ email, onLogout }: { email: string; onLogout: () => void }) { 
   return (
-    <>
-    <li className="nav-item">
-      <Link
-        to={AppRoutes.myWaitingPatients}
-        className="nav-link active"
-        aria-current="page"
+    <Group>
+      <Anchor component={Link} to="/" size="sm" c="white">
+        Login
+      </Anchor>
+      <Anchor
+        component="button"
+        onClick={onLoginTherapist}
+        size="sm"
+        c="white"
       >
-        Warteliste
-      </Link>
-    </li>
-    <li className="nav-item">
-      <Link
-        to={AppRoutes.myActivePatients}
-        className="nav-link active"
-        aria-current="page"
-      >
-        Patienten
-      </Link>
-    </li>
+        Therapeuten-Anmeldung
+      </Anchor>
+    </Group>
+  );
+}
 
-    <li className="nav-item">
-      <button
-        type="submit"
-        onClick={onLogout}
-        className="nav-link btn btn-link"
-      >
+function TherapistNavbar({ email, onLogout }: { email: string; onLogout: () => void }) {
+  return (
+    <Group>
+      <Anchor component={Link} to={AppRoutes.myWaitingPatients} size="sm" c="white">
+        Warteliste
+      </Anchor>
+      <Anchor component={Link} to={AppRoutes.myActivePatients} size="sm" c="white">
+        Patienten
+      </Anchor>
+      <Button variant="subtle" size="sm" onClick={onLogout} c="white">
         Logout
-      </button>
-    </li>
-    <li className="nav-item">
-      <Link
-        to="/myProfile"
-        className="nav-link active"
-        aria-current="page"
-      >
+      </Button>
+      <Text size="sm" c="dimmed">
         {email}
-      </Link>
-    </li>
-  </>
-  )
- }
+      </Text>
+    </Group>
+  );
+}
 
 const Navbar = () => {
-
   const { keycloak, initialized } = useKeycloak();
-
-  //todo use right login for patient and therapist
-
-  console.log("client: " + keycloak.clientId);
-
+  console.log('kk' + initialized);
   return (
-    <nav
-      className="navbar navbar-expand-lg bg-body-tertiary"
-      data-bs-theme="dark"
-    >
-      <div className="container-fluid">
-        <div className="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-            <li className="nav-item">
-              <Link to="/" className="nav-link active" aria-current="page">
-                Home
-              </Link>
-            </li>
+    <Box bg="dark" px="md" py="sm">
+      <Flex justify="space-between" align="center">
+        <Group>
+          <Anchor component={Link} to="/" size="md" fw={500} c="white">
+            Home
+          </Anchor>
+        </Group>
 
-            {initialized && !keycloak.authenticated && (
-              <GuestNavbar
-                onLoginTherapist={() => keycloak.login()} 
-              />
-            )}
+        <Group>
+          {!initialized || !keycloak.authenticated && (
+            <GuestNavbar onLoginTherapist={ () => {
+              keycloak.login();
+            }
+            } />
+          )}
 
-            {initialized && keycloak.authenticated && keycloak.clientId === "therapist-client" && (
+          {initialized &&
+            keycloak.authenticated &&
+            keycloak.clientId === 'therapist-client' && (
               <TherapistNavbar
-                email={keycloak.tokenParsed?.email || "Therapist"}
+                email={keycloak.tokenParsed?.email || 'Therapist'}
                 onLogout={() => keycloak.logout()}
               />
             )}
-
-          </ul>
-          <ul className="navbar-nav ms-auto">
-          </ul>
-        </div>
-      </div>
-    </nav>
+        </Group>
+      </Flex>
+    </Box>
   );
 };
 
