@@ -10,15 +10,28 @@ import {
   Text,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import createApiClient from '../APIService';
-import { setTherapistData } from '../endpoints';
-import keycloak from '../keycloak';
+import createApiClient from '../../APIService';
+import { createTherapist } from '../../endpoints';
+import keycloak from '../../keycloak';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useUserStatus } from '../hooks/useUserStatus';
 
 function SetProfile() {
+    const {hasProfile} = useUserStatus();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+      if(hasProfile){
+        //navigate('/'); 
+      }
+    })
+
   const form = useForm({
     initialValues: {
       firstName: '',
       lastName: '',
+      address: '',
     },
 
     validate: {
@@ -29,19 +42,13 @@ function SetProfile() {
 
    const handleSubmit = async (values: typeof form.values) => {
     try {
-      console.log('Form values:', values);
       const apiClient = createApiClient(keycloak?.token ?? "");
-      await apiClient.post(setTherapistData, values);
-      // Handle successful registration (e.g., redirect to login, show success message)
-      form.reset(); // Optionally reset the form
+      await apiClient.post(createTherapist, values);
+      return;
     } catch (error: any) {
-      console.error('Registration failed:', error);
-      // Handle registration error (e.g., show error message to the user)
-      if (error.response && error.response.data && error.response.data.message) {
-        // Example: if your backend sends an error message
-        form.setFieldError('email', error.response.data.message); // Or a general error
+      if (error) {
+        form.setFieldError('email', error);
       } else {
-        // Generic error message
         alert('An unexpected error occurred. Please try again.');
       }
     }
@@ -49,18 +56,18 @@ function SetProfile() {
 
   return (
     <Container size={460} my={60}>
-    <Title
-      order={2}
-      style={{ fontWeight: 700, textAlign: 'center' }}
-    >
-      Welcome to Our App
-    </Title>
-    <Text c="dimmed" size="sm" ta="center" mt={5}>
-      Already have an account?{' '}
-      <Anchor size="sm" component="button">
-        Login
-      </Anchor>
-    </Text>
+      <Title
+        order={2}
+        style={{ fontWeight: 700, textAlign: 'center' }}
+      >
+        Welcome to Our App
+      </Title>
+      <Text c="dimmed" size="sm" ta="center" mt={5}>
+        Already have an account?{' '}
+        <Anchor size="sm" component="button">
+          Login
+        </Anchor>
+      </Text>
 
       <Paper withBorder shadow="md" p={30} radius="md" mt="xl">
         <form onSubmit={form.onSubmit(handleSubmit)}>
@@ -87,9 +94,9 @@ function SetProfile() {
             />
           </Stack>
 
-          <Button fullWidth mt="xl" type="submit">
-            Register
-          </Button>
+            <Button fullWidth mt="xl" type="submit">
+              Speichern
+            </Button>
         </form>
       </Paper>
     </Container>

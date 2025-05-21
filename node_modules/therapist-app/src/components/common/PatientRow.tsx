@@ -1,6 +1,6 @@
-import { StatusType } from "../constants";
+import { StatusType } from "../../constants";
 import { useNavigate } from 'react-router-dom';
-import type { PatientType } from "../types/patient.types";
+import type { PatientType } from "../../types/patient.types";
 
 //todo check if status: string is ok or shoult be status: typeof StatusType
 interface PatientRowProps {

@@ -1,14 +1,14 @@
 // AppRoutes.tsx
-import { useUserStatus } from './useUserStatus';
+import { useUserStatus } from './components/hooks/useUserStatus';
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import { Navbar } from './Navbar';
-import { Home } from './Home';
-import CreatePatient from './CreatePatient';
-import { Patient } from './Patient';
-import { MyPatients } from './MyPatients';
-import { Profile } from './Profile';
-import { PageNotFound } from './PageNotFound';
-import { SetProfile } from './SetProfile';
+import { Navbar } from './components/common/Navbar';
+import { Home } from './components/pages/Home';
+import { CreatePatient } from './components/pages/CreatePatient';
+import { Patient } from './components/pages/Patient';
+import { MyPatients } from './components/pages/MyPatients';
+import { Profile } from './components/pages/Profile';
+import { PageNotFound } from './components/pages/PageNotFound';
+import { SetProfile } from './components/pages/SetProfile';
 import { useEffect } from 'react';
 
 export const AppRoutes = () => {

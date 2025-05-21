@@ -1,7 +1,7 @@
 import React, { useState } from 'react'; // Import React for event types
 import { useNavigate, useParams } from 'react-router-dom';
-import { addPatientWithStatus } from '../endpoints';
-import createApiClient from '../APIService';
+import { addPatientWithStatus } from '../../endpoints';
+import createApiClient from '../../APIService';
 import { useKeycloak } from '@react-keycloak/web';
 
 function CreatePatient() {
@@ -139,4 +139,4 @@ function CreatePatient() {
   );
 }
 
-export default CreatePatient;
+export { CreatePatient };

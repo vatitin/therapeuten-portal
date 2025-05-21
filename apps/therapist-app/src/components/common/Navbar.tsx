@@ -1,8 +1,8 @@
 import { Button, Group, Anchor, Flex, Box, Text } from '@mantine/core';
 import { Link } from 'react-router-dom';
-import { AppRoutes } from '../constants';
+import { AppRoutes } from '../../constants';
 import { useKeycloak } from '@react-keycloak/web';
-import { useUserStatus } from './useUserStatus';
+import { useUserStatus } from '../hooks/useUserStatus';
 
 function GuestNavbar({ onLoginTherapist }: { onLoginTherapist: () => void }) {
   return (

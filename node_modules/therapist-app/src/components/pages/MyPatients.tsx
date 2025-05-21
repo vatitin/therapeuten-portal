@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { StatusType } from '../constants';
-import { PatientRow } from './PatientRow';
+import { StatusType } from '../../constants';
+import { PatientRow } from '../common/PatientRow';
 import { HttpStatusCode } from 'axios';
-import createApiClient from '../APIService';
-import { deletePatientWithId, patientsWithStatus, updatePatient } from '../endpoints';
-import type { PatientType } from '../types/patient.types';
+import createApiClient from '../../APIService';
+import { deletePatientWithId, patientsWithStatus, updatePatient } from '../../endpoints';
+import type { PatientType } from '../../types/patient.types';
 import { useKeycloak } from '@react-keycloak/web'
 
 //todo check types of id, event and so on and how to handle the id nnumber check since it is checked multiple times

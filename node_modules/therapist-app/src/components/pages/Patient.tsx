@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { patientById } from '../endpoints';
-import createApiClient from '../APIService';
-import type { PatientType } from '../types/patient.types';
-import keycloak from '../keycloak';
+import { patientById } from '../../endpoints';
+import createApiClient from '../../APIService';
+import type { PatientType } from '../../types/patient.types';
+import keycloak from '../../keycloak';
 
 function Patient() {
   const { id } = useParams();
