@@ -1,4 +1,4 @@
-import React, { useState } from 'react'; // Import React for event types
+import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { addPatientWithStatus } from '../../endpoints';
 import createApiClient from '../../APIService';
@@ -31,7 +31,6 @@ function CreatePatient() {
       await apiClient.post(addPatientWithStatus(patientStatus), formData);
       navigate(`/myPatients/${patientStatus}`);
     } catch (error) {
-      // Handle error, e.g., show a message to the user
       console.error('Error creating patient:', error);
     }
   };

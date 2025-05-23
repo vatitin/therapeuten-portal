@@ -12,13 +12,13 @@ function Map(){
     const map = new maplibregl.Map({
       container: mapContainer.current,
       style: `https://api.maptiler.com/maps/streets/style.json?key=PPUA691BI7yVJ7CQUGBI`,
-      center: [10.0, 51.0], // Center of Germany
+      center: [10.0, 51.0], 
       zoom: 5,
     });
 
     map.addControl(new maplibregl.NavigationControl(), 'top-right');
 
-    return () => map.remove(); // Cleanup
+    return () => map.remove(); 
   }, []);
 
   return (
