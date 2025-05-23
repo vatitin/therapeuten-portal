@@ -1,77 +1,131 @@
-import { Button, Group, Anchor, Flex, Box, Text } from '@mantine/core';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import {
+  Container,
+  Group,
+  Burger,
+  Drawer,
+  Anchor,
+  Button,
+  Text,
+  useMantineTheme,
+  ActionIcon,
+  AppShell
+} from '@mantine/core';
+import { Link, useLocation } from 'react-router-dom';
 import { AppRoutes } from '../../constants';
 import { useKeycloak } from '@react-keycloak/web';
+import { IconHome, IconUsers, IconListDetails, IconLogout } from '@tabler/icons-react';
 
-function GuestNavbar({ onLoginTherapist }: { onLoginTherapist: () => void }) {
-  return (
-    <Group>
-      <Anchor component={Link} to="/" size="sm" c="white">
+export function Navbar() {
+  const { keycloak, initialized } = useKeycloak();
+  const theme = useMantineTheme();
+  const [drawerOpened, setDrawerOpened] = React.useState(false);
+  const location = useLocation();
+
+  const links = [] as React.ReactNode[];
+  if (!initialized || !keycloak.authenticated) {
+    links.push(
+      <Anchor
+        component={Link}
+        to="/"
+        key="login"
+        c={location.pathname === '/' ? 'yellow' : 'white'}
+        style={{ fontWeight: 500 }}
+      >
         Login
       </Anchor>
-      <Anchor
-        component="button"
-        onClick={onLoginTherapist}
-        size="sm"
-        c="white"
+    );
+    links.push(
+      <Button
+        key="therapist"
+        variant="outline"
+        color="yellow"
+        size="xs"
+        onClick={() => keycloak.login()}
       >
         Therapeuten-Anmeldung
-      </Anchor>
-    </Group>
-  );
-}
-
-function TherapistNavbar({ email, onLogout }: { email: string; onLogout: () => void }) {
-  return (
-    <Group>
-      <Anchor component={Link} to={AppRoutes.myWaitingPatients} size="sm" c="white">
-        Warteliste
-      </Anchor>
-      <Anchor component={Link} to={AppRoutes.myActivePatients} size="sm" c="white">
-        Patienten
-      </Anchor>
-      <Button variant="subtle" size="sm" onClick={onLogout} c="white">
-        Logout
       </Button>
-      <Text size="sm" c="dimmed">
-        {email}
+    );
+  } else if (keycloak.clientId === 'therapist-client') {
+    links.push(
+      <Anchor
+        component={Link}
+        to={AppRoutes.myWaitingPatients}
+        key="waiting"
+        c={location.pathname === AppRoutes.myWaitingPatients ? 'yellow' : 'white'}
+        style={{ display: 'flex', alignItems: 'center', fontWeight: 500 }}
+      >
+        <IconListDetails size={16} style={{ marginRight: 4 }} /> Warteliste
+      </Anchor>
+    );
+    links.push(
+      <Anchor
+        component={Link}
+        to={AppRoutes.myActivePatients}
+        key="patients"
+        c={location.pathname === AppRoutes.myActivePatients ? 'yellow' : 'white'}
+        style={{ display: 'flex', alignItems: 'center', fontWeight: 500 }}
+      >
+        <IconUsers size={16} style={{ marginRight: 4 }} /> Patienten
+      </Anchor>
+    );
+    links.push(
+      <ActionIcon
+        key="logout"
+        color="red"
+        variant="light"
+        onClick={() => keycloak.logout()}
+      >
+        <IconLogout />
+      </ActionIcon>
+    );
+    links.push(
+      <Text key="email" c="gray" size="sm">
+        {keycloak.tokenParsed?.email}
       </Text>
-    </Group>
+    );
+  }
+
+  return (
+    <AppShell.Header style={{ backgroundColor: theme.colors.dark[7], height: 60 }}>
+      <Container size="xl" style={{ display: 'flex', alignItems: 'center', height: '100%', padding: theme.spacing.sm }}>
+        <Group style={{ flex: 1 }}>
+          <ActionIcon
+            component={Link}
+            to="/"
+            variant="light"
+            size="lg"
+            color="yellow"
+          >
+            <IconHome size={24} />
+          </ActionIcon>
+        </Group>
+
+        <Group px="md" style={{ display: 'none', '@media (min-width: 768px)': { display: 'flex' } }}>
+          {links}
+        </Group>
+
+        <Burger
+          opened={drawerOpened}
+          onClick={() => setDrawerOpened((o) => !o)}
+          size="sm"
+          color="white"
+          mr="md"
+          style={{ '@media (min-width: 768px)': { display: 'none' } }}
+        />
+
+        <Drawer
+          opened={drawerOpened}
+          onClose={() => setDrawerOpened(false)}
+          title="Navigation"
+          padding="sm"
+          size="xs"
+        >
+          <Group px="sm">
+            {links}
+          </Group>
+        </Drawer>
+      </Container>
+    </AppShell.Header>
   );
 }
-
-const Navbar = () => {
-  const { keycloak, initialized } = useKeycloak();
-  console.log('kk' + initialized);
-  return (
-    <Box bg="dark" px="md" py="sm">
-      <Flex justify="space-between" align="center">
-        <Group>
-          <Anchor component={Link} to="/" size="md" fw={500} c="white">
-            Home
-          </Anchor>
-        </Group>
-
-        <Group>
-          {!initialized || !keycloak.authenticated && (
-            <GuestNavbar onLoginTherapist={ () => {
-              keycloak.login();
-            }
-            } />
-          )}
-
-          {initialized &&
-            keycloak.authenticated &&
-            keycloak.clientId === 'therapist-client' && (
-              <TherapistNavbar
-                email={keycloak.tokenParsed?.email || 'Therapist'}
-                onLogout={() => keycloak.logout()}
-              />
-            )}
-        </Group>
-      </Flex>
-    </Box>
-  );
-};
-
-export { Navbar };
