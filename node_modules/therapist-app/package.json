@@ -21,6 +21,7 @@
     "vite": "^6.3.5"
   },
   "dependencies": {
+    "@mantinex/mantine-logo": "^2.0.0",
     "@mapbox/search-js-react": "^1.0.0",
     "@types/react": "^19.1.5"
   }

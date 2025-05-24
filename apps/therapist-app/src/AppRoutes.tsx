@@ -10,6 +10,7 @@ import { Profile } from './components/pages/Profile';
 import { PageNotFound } from './components/pages/PageNotFound';
 import { SetProfile } from './components/pages/SetProfile';
 import { useEffect } from 'react';
+import { Header } from './components/common/Header';
 
 export const AppRoutes = () => {
   const { hasProfile, statusChecked } = useUserStatus();
@@ -26,7 +27,6 @@ export const AppRoutes = () => {
 
   return (
     <>
-      <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/addNewPatient/:patientStatus" element={<CreatePatient />} />

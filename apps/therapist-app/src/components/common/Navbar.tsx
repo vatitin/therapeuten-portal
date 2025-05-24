@@ -87,45 +87,47 @@ export function Navbar() {
   }
 
   return (
-    <AppShell.Header style={{ backgroundColor: theme.colors.dark[7], height: 60 }}>
-      <Container size="xl" style={{ display: 'flex', alignItems: 'center', height: '100%', padding: theme.spacing.sm }}>
-        <Group style={{ flex: 1 }}>
-          <ActionIcon
-            component={Link}
-            to="/"
-            variant="light"
-            size="lg"
-            color="yellow"
-          >
-            <IconHome size={24} />
-          </ActionIcon>
-        </Group>
+    <AppShell>
+      <AppShell.Header style={{ backgroundColor: theme.colors.dark[7], height: 60 }}>
+        <Container size="xl" style={{ display: 'flex', alignItems: 'center', height: '100%', padding: theme.spacing.sm }}>
+          <Group style={{ flex: 1 }}>
+            <ActionIcon
+              component={Link}
+              to="/"
+              variant="light"
+              size="lg"
+              color="yellow"
+            >
+              <IconHome size={24} />
+            </ActionIcon>
+          </Group>
 
-        <Group px="md" style={{ display: 'none', '@media (min-width: 768px)': { display: 'flex' } }}>
-          {links}
-        </Group>
-
-        <Burger
-          opened={drawerOpened}
-          onClick={() => setDrawerOpened((o) => !o)}
-          size="sm"
-          color="white"
-          mr="md"
-          style={{ '@media (min-width: 768px)': { display: 'none' } }}
-        />
-
-        <Drawer
-          opened={drawerOpened}
-          onClose={() => setDrawerOpened(false)}
-          title="Navigation"
-          padding="sm"
-          size="xs"
-        >
-          <Group px="sm">
+          <Group px="md" style={{ display: 'none', '@media (min-width: 768px)': { display: 'flex' } }}>
             {links}
           </Group>
-        </Drawer>
-      </Container>
-    </AppShell.Header>
+
+          <Burger
+            opened={drawerOpened}
+            onClick={() => setDrawerOpened((o) => !o)}
+            size="sm"
+            color="white"
+            mr="md"
+            style={{ '@media (min-width: 768px)': { display: 'none' } }}
+          />
+
+          <Drawer
+            opened={drawerOpened}
+            onClose={() => setDrawerOpened(false)}
+            title="Navigation"
+            padding="sm"
+            size="xs"
+          >
+            <Group px="sm">
+              {links}
+            </Group>
+          </Drawer>
+        </Container>
+      </AppShell.Header>
+    </AppShell>
   );
 }

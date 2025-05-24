@@ -13,6 +13,6 @@ createRoot(document.getElementById('root')!).render(
     <MantineProvider theme={{}} defaultColorScheme="auto" > 
       <App />
     </MantineProvider>
-  </StrictMode>,
+  </StrictMode>
   </ReactKeycloakProvider>
 )
