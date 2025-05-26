@@ -14,7 +14,8 @@ export const useUserStatus = () => {
             return;
         }
         if (!keycloak.authenticated) {
-            keycloak.login();
+            console.log("User is not authenticated");
+            return;
         }
         if (!hasProfile) {
             try {

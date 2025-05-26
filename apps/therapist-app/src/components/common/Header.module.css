@@ -3,6 +3,8 @@
   background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
   border-bottom: 1px solid light-dark(var(--mantine-color-gray-2), transparent);
   margin-bottom: 120px;
+  justify-content: space-between;
+  height: 60px;
 }
 
 .mainSection {
@@ -39,7 +41,7 @@
   height: 38px;
   background-color: transparent;
   position: relative;
-  bottom: -1px;
+  bottom: -10px;
 
   &::before,
   &::after {

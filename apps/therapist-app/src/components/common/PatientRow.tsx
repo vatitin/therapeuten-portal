@@ -6,8 +6,8 @@ import type { PatientType } from "../../types/patient.types";
 interface PatientRowProps {
   patient: PatientType;
   patientStatus: string;
-  onRemove: (id: string, event: React.MouseEvent<HTMLButtonElement>) => void;
-  onUpdate: (id: string, status: string, event: React.MouseEvent<HTMLButtonElement>) => void;
+  onRemove: (args: { id: string; event: React.MouseEvent<HTMLButtonElement> }) => void;
+  onUpdate: (args: {id: string, status: string, event: React.MouseEvent<HTMLButtonElement>}) => void;
 }
 
 export const PatientRow: React.FC<PatientRowProps> = ({ patient, patientStatus, onRemove, onUpdate }) => {
@@ -25,7 +25,7 @@ export const PatientRow: React.FC<PatientRowProps> = ({ patient, patientStatus, 
             <button
               type="button"
               className="btn btn-success btn-sm"
-              onClick={(e) => onUpdate(patient.id, StatusType.ACTIVE, e)}
+              onClick={(event) => onUpdate({id: patient.id, status: StatusType.ACTIVE, event})}
             >
               Hinzufügen
             </button>
@@ -33,7 +33,7 @@ export const PatientRow: React.FC<PatientRowProps> = ({ patient, patientStatus, 
           <button
             type="button"
             className="btn btn-danger btn-sm"
-            onClick={(e) => onRemove(patient.id, e)}
+            onClick={(event) => onRemove({id: patient.id, event})}
           >
             Entfernen
           </button>

@@ -11,13 +11,13 @@ function Patient() {
 
   useEffect(() => {
     const fetchPatients = async () => {
-      if (!id || !Number.isInteger(Number(id))) {
+      if (!id) {
         console.warn('No ID provided');
         return;
       }
       //todo check if keycloak is initialized and authenticated
       const apiClient = createApiClient(keycloak?.token ?? "");
-      const response = await apiClient.get(patientById(Number(id)))
+      const response = await apiClient.get(patientById(id))
       setPatientObject(response.data) 
     }
 
