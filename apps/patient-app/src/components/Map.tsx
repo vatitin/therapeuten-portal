@@ -17,6 +17,9 @@ function Map(){
     });
 
     map.addControl(new maplibregl.NavigationControl(), 'top-right');
+      const marker = new maplibregl.Marker()
+      .setLngLat([13, 51.1])
+      .addTo(map);
 
     return () => map.remove(); 
   }, []);

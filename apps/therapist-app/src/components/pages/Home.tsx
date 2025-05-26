@@ -5,6 +5,7 @@ import { useKeycloak } from '@react-keycloak/web';
 
 import { useMantineColorScheme } from '@mantine/core';
 
+//todo this is overengineered, needs to be spimplified or split
 const useStyles = createStyles((theme, _params) => {
   const { colorScheme } = useMantineColorScheme();
   return {

@@ -19,10 +19,11 @@ import { useUserStatus } from '../hooks/useUserStatus';
 export function SetProfile() {
   const { hasProfile } = useUserStatus();
   const navigate = useNavigate();
+  const mapboxAccessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || ''
 
   useEffect(() => {
     if (hasProfile) {
-      navigate('/');
+      //navigate('/');
     }
   }, [hasProfile]);
 
@@ -34,6 +35,8 @@ export function SetProfile() {
       addressLine2: '',
       city:         '',
       postalCode:   '',
+      latitude: 0,
+      longitude: 0,
     },
     validate: {
       firstName:    (v) => (v.trim().length < 2 ? 'Min. 2 Zeichen' : null),
@@ -62,8 +65,11 @@ export function SetProfile() {
 
   const handleSubmit = async (values: typeof form.values) => {
     try {
+      console.log('Submitting therapist profile:', form.values.latitude);
       const api = createApiClient(keycloak.token ?? '');
       await api.post(createTherapist, values);
+      //todo add confirmation message
+      navigate('/');
     } catch (err: any) {
       form.setFieldError('address', err.message || 'Fehler');
     }
@@ -95,8 +101,21 @@ export function SetProfile() {
             </Group>
 
             <AddressAutofill
-              accessToken={import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || ''}
+              accessToken={mapboxAccessToken}
+              onRetrieve={(response) => {
+                const feature = response.features?.[0];
+                console.log("a" + feature)
+                console.log("b"+ feature.geometry);
+                console.log("c" + feature.geometry.coordinates);
+
+                if (feature && feature.geometry && Array.isArray(feature.geometry.coordinates)) {
+                  const [lng, lat] = feature.geometry.coordinates;
+                  form.setFieldValue('latitude', lat);
+                  form.setFieldValue('longitude', lng);
+                }
+              }}
             >
+              
               <div>
                 <Stack gap="xs">
                   <TextInput
