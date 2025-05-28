@@ -1,8 +1,17 @@
 import 'maplibre-gl/dist/maplibre-gl.css';
 import maplibregl from 'maplibre-gl';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 function Map(){
+
+  interface TherapistLocation {
+  id: string;
+  latitude: number;
+  longitude: number;
+  name?: string;
+}
+  const [locations, setLocations] = useState<TherapistLocation[]>([]);
+  const mapRef = useRef<maplibregl.Map | null>(null);
   const mapContainer = useRef<HTMLDivElement | null>(null);
 
   // todo check CSP Directives recommendations on https://maplibre.org/maplibre-gl-js/docs/
@@ -21,8 +30,49 @@ function Map(){
       .setLngLat([13, 51.1])
       .addTo(map);
 
+    mapRef.current = map;
     return () => map.remove(); 
   }, []);
+
+
+  useEffect(() => {
+    fetch('http://localhost:3001/patient/locations')
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json() as Promise<TherapistLocation[]>;
+      })
+      .then(data => setLocations(data))
+      .catch(err => {
+        console.error('Failed to load therapist locations', err);
+      });
+  }, []);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    console.log(locations.length)
+    console.log(!map)
+    if (!map || locations.length === 0) return;
+
+    locations.forEach(loc => {
+      console.log("lon, lan: " + loc.longitude + " | | " + loc.latitude)
+      const marker = new maplibregl.Marker()
+        .setLngLat([loc.longitude, loc.latitude]);
+
+      // optional: add a popup with the therapist’s name or ID
+      if (loc.id) {
+        marker.setPopup(
+          new maplibregl.Popup({ offset: 25 }).setText(loc.id)
+        );
+      }
+
+      marker.addTo(map);
+    });
+  }, [locations]);
+
+
+
+
+
 
   return (
     <div className="container my-4">

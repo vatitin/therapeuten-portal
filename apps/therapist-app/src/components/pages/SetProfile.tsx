@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   TextInput,
   Paper,
@@ -19,7 +19,7 @@ import { useUserStatus } from '../hooks/useUserStatus';
 export function SetProfile() {
   const { hasProfile } = useUserStatus();
   const navigate = useNavigate();
-  const mapboxAccessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || ''
+  const mapboxAccessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || '';  
 
   useEffect(() => {
     if (hasProfile) {
@@ -35,8 +35,6 @@ export function SetProfile() {
       addressLine2: '',
       city:         '',
       postalCode:   '',
-      latitude: 0,
-      longitude: 0,
     },
     validate: {
       firstName:    (v) => (v.trim().length < 2 ? 'Min. 2 Zeichen' : null),
@@ -47,35 +45,71 @@ export function SetProfile() {
     },
   });
 
-  // whenever Chrome autofills a number into addressLine2, move it into addressLine1
+  const handleSubmit = async (values: typeof form.values) => {
+    // todo use user confirmation by minimap instead of this big callbac
+    let longitude = null;
+    let latitude = null;
+      const fullAddress = `${values.addressLine1} ${values.addressLine2} ${values.postalCode} ${values.city}`;
+      try {
+        const res = await fetch(
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+            fullAddress
+          )}.json?access_token=${mapboxAccessToken}&limit=1`
+        );
+        const data = await res.json();
+        const feat = data.features?.[0];
+        console.log('Geocode response:', feat.geometry.coordinates);
+        if (feat?.geometry?.coordinates) {
+          [longitude, latitude] = feat.geometry.coordinates;
+        }
+      } catch (err) {
+        console.error('Geocode fallback failed', err);
+      }
+      if (!longitude || !latitude) {
+        form.setFieldError(
+          'addressLine1',
+          'Bitte wählen Sie eine Adresse aus den Vorschlägen oder geben Sie eine gültige Adresse ein.'
+        );
+        return;
+      }
+    
+    try {      
+      console.log(
+        'Submitting therapist profile with coords:',
+      );
+
+      const payload = {
+        ...values,
+        location: {
+          type: 'Point',
+          coordinates:[longitude, latitude]
+        }
+      };
+
+      console.log("long ot sub: " + payload.location.coordinates.toString())
+
+      const api = createApiClient(keycloak.token ?? '');
+      await api.post(createTherapist, payload);
+      navigate('/');
+    } catch (err: any) {
+      form.setFieldError('addressLine1', err.message || 'Fehler beim Speichern');
+    }
+  };
+
+  // whenever Chrome autofills a number into addressLine2, move it to addressLine1
   useEffect(() => {
     const num = form.values.addressLine2.trim();
-    // if the Zusatz is purely digits (or starts with digits)…
     if (num && /^\d+/.test(num)) {
-      // and that number isn’t already in line1
       if (!form.values.addressLine1.includes(num)) {
         form.setFieldValue(
           'addressLine1',
           `${form.values.addressLine1} ${num}`.trim()
         );
       }
-      form.setFieldValue('addressLine2', ''); 
+      form.setFieldValue('addressLine2', '');
     }
   }, [form.values.addressLine2]);
 
-  const handleSubmit = async (values: typeof form.values) => {
-    try {
-      console.log('Submitting therapist profile:', form.values.latitude);
-      const api = createApiClient(keycloak.token ?? '');
-      await api.post(createTherapist, values);
-      //todo add confirmation message
-      navigate('/');
-    } catch (err: any) {
-      form.setFieldError('address', err.message || 'Fehler');
-    }
-  };
-
-  //todo add mini map for therapipst to validate address or do check if address is valid
   return (
     <Container size={460} my={60}>
       <Title order={2} ta="center" fw={700}>
@@ -102,20 +136,7 @@ export function SetProfile() {
 
             <AddressAutofill
               accessToken={mapboxAccessToken}
-              onRetrieve={(response) => {
-                const feature = response.features?.[0];
-                console.log("a" + feature)
-                console.log("b"+ feature.geometry);
-                console.log("c" + feature.geometry.coordinates);
-
-                if (feature && feature.geometry && Array.isArray(feature.geometry.coordinates)) {
-                  const [lng, lat] = feature.geometry.coordinates;
-                  form.setFieldValue('latitude', lat);
-                  form.setFieldValue('longitude', lng);
-                }
-              }}
             >
-              
               <div>
                 <Stack gap="xs">
                   <TextInput
@@ -129,7 +150,7 @@ export function SetProfile() {
 
                   <TextInput
                     label="Adresszusatz (optional)"
-                    placeholder="z. B. Gebäudeteil"
+                    placeholder="z. B. Gebäudeteil"
                     {...form.getInputProps('addressLine2')}
                     name="address-line2"
                     autoComplete="address-line2"
@@ -156,7 +177,6 @@ export function SetProfile() {
                 </Stack>
               </div>
             </AddressAutofill>
-
           </Stack>
 
           <Button fullWidth mt="xl" type="submit">

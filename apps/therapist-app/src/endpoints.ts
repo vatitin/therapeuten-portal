@@ -1,13 +1,12 @@
 const BASE_URL = 'http://localhost:3001';
-const THERAPIST_PATIENTS_URL = `${BASE_URL}/therapist/patients`;
 const THERAPIST_URL = `${BASE_URL}/therapist`;
 
 export const therapistProfile = `${BASE_URL}/therapist/myProfile`;
 
-export const patientById = (id: string) => `${THERAPIST_PATIENTS_URL}/byId/${id}`;
+export const patientById = (id: string) => `${THERAPIST_URL}/getPatientById/${id}`;
 
 export const patientsWithStatus = (status: string) =>
-  `${THERAPIST_PATIENTS_URL}/${status}`;
+  `${THERAPIST_URL}/getPatientsByStatus/${status}`;
 
 export const deletePatientWithId = (id: string) =>
   `${THERAPIST_URL}/removePatient/${id}`;
