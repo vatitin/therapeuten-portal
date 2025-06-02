@@ -1,6 +1,6 @@
 import { Container, Group, Tabs } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
-import classes from './Header.module.css';
+import classes from './Header.module.css'
 import { ProfileContainer } from './ProfileContainer';
 
 const tabs = ['Home', 'Patienten'] as const;

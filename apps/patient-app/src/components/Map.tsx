@@ -1,88 +1,122 @@
 import 'maplibre-gl/dist/maplibre-gl.css';
 import maplibregl from 'maplibre-gl';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 
-function Map(){
-
-  interface TherapistLocation {
+interface TherapistLocation {
   id: string;
   latitude: number;
   longitude: number;
   name?: string;
 }
+
+export function Map() {
   const [locations, setLocations] = useState<TherapistLocation[]>([]);
+  const [address, setAddress] = useState('');
+  const [distance, setDistance] = useState(10);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const mapContainer = useRef<HTMLDivElement | null>(null);
+  const markersRef = useRef<maplibregl.Marker[]>([]);
 
-  // todo check CSP Directives recommendations on https://maplibre.org/maplibre-gl-js/docs/
+  // initialize map once
   useEffect(() => {
     if (!mapContainer.current) return;
 
     const map = new maplibregl.Map({
       container: mapContainer.current,
       style: `https://api.maptiler.com/maps/streets/style.json?key=PPUA691BI7yVJ7CQUGBI`,
-      center: [10.0, 51.0], 
+      center: [10.0, 51.0],
       zoom: 5,
     });
 
-    map.addControl(new maplibregl.NavigationControl(), 'top-right');
-      const marker = new maplibregl.Marker()
-      .setLngLat([13, 51.1])
-      .addTo(map);
-
     mapRef.current = map;
-    return () => map.remove(); 
+    return () => map.remove();
   }, []);
 
-
-  useEffect(() => {
-    fetch('http://localhost:3001/patient/locations')
-      .then(res => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json() as Promise<TherapistLocation[]>;
-      })
-      .then(data => setLocations(data))
-      .catch(err => {
-        console.error('Failed to load therapist locations', err);
-      });
-  }, []);
-
+  // clear and render markers when locations update
   useEffect(() => {
     const map = mapRef.current;
-    console.log(locations.length)
-    console.log(!map)
-    if (!map || locations.length === 0) return;
+    if (!map) return;
 
+    // remove existing markers
+    markersRef.current.forEach(marker => marker.remove());
+    markersRef.current = [];
+
+    // add new markers
     locations.forEach(loc => {
-      console.log("lon, lan: " + loc.longitude + " | | " + loc.latitude)
       const marker = new maplibregl.Marker()
         .setLngLat([loc.longitude, loc.latitude]);
 
-      // optional: add a popup with the therapist’s name or ID
-      if (loc.id) {
+      if (loc.name || loc.id) {
         marker.setPopup(
-          new maplibregl.Popup({ offset: 25 }).setText(loc.id)
+          new maplibregl.Popup({ offset: 25 })
+            .setText(loc.name || loc.id)
         );
       }
 
       marker.addTo(map);
+      markersRef.current.push(marker);
     });
   }, [locations]);
 
+  // handle form submission: geocode + fetch locations
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!address) return;
+    try {
+      // geocode address using MapTiler
+      const geoRes = await fetch(
+        `https://api.maptiler.com/geocoding/${encodeURIComponent(address)}.json?key=PPUA691BI7yVJ7CQUGBI&limit=1`
+      );
+      const geoData = await geoRes.json();
+      if (!geoData.features?.length) {
+        alert('Address not found');
+        return;
+      }
+      const [lng, lat] = geoData.features[0].geometry.coordinates;
 
+      // center map on the result
+      mapRef.current?.flyTo({ center: [lng, lat], zoom: 12 });
 
-
-
+      // fetch therapist locations within distance
+      const locRes = await fetch(
+        `http://localhost:3001/patient/locations?lng=${lng}&lat=${lat}&distance=${distance}`
+      );
+      if (!locRes.ok) throw new Error(`HTTP ${locRes.status}`);
+      const data: TherapistLocation[] = await locRes.json();
+      setLocations(data);
+    } catch (err) {
+      console.error('Search error', err);
+      alert('Failed to fetch locations');
+    }
+  };
 
   return (
     <div className="container my-4">
+      <form onSubmit={handleSubmit} className="mb-3 flex gap-2">
+        <input
+          type="text"
+          placeholder="Enter address"
+          value={address}
+          onChange={e => setAddress(e.target.value)}
+          className="flex-1 p-2 border rounded"
+        />
+        <input
+          type="number"
+          placeholder="Distance (km)"
+          value={distance}
+          onChange={e => setDistance(Number(e.target.value))}
+          className="w-24 p-2 border rounded"
+        />
+        <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">
+          Search
+        </button>
+      </form>
+
       <div
         ref={mapContainer}
-        className="w-100 rounded shadow"
+        className="w-full rounded shadow"
         style={{ height: '50vh' }}
       />
     </div>
   );
-};
-
-export { Map };
+}
