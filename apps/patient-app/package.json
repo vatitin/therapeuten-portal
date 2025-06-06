@@ -10,9 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mantine/core": "^8.0.1",
     "@mantine/styles": "^6.0.22",
     "@mantinex/mantine-logo": "^2.0.0",
+    "@mapbox/search-js-core": "^1.1.0",
+    "@mapbox/search-js-react": "^1.0.0-beta.21",
     "@maptiler/geocoding-control": "^2.1.6",
+    "@turf/turf": "^7.2.0",
+    "@types/react": "^19.1.6",
     "maplibre-gl": "^5.5.0",
     "postcss": "^8.5.4",
     "postcss-preset-mantine": "^1.17.0",

@@ -1,122 +1,199 @@
+// src/components/Map.tsx
 import 'maplibre-gl/dist/maplibre-gl.css';
-import maplibregl from 'maplibre-gl';
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import maplibregl, { GeoJSONSource } from 'maplibre-gl';
+import { useEffect, useRef } from 'react';
+import { Container, Paper } from '@mantine/core';
+import type { TherapistLocation } from './therapistLocation';
+import * as turf from '@turf/turf';
 
-interface TherapistLocation {
-  id: string;
-  latitude: number;
-  longitude: number;
-  name?: string;
+interface MapProps {
+  locations: TherapistLocation[];
+  radius: number;
+  center?: [number, number];
+  selectedTherapistId?: string | null;
 }
 
-export function Map() {
-  const [locations, setLocations] = useState<TherapistLocation[]>([]);
-  const [address, setAddress] = useState('');
-  const [distance, setDistance] = useState(10);
+export function Map({ locations, center, radius, selectedTherapistId }: MapProps) {
   const mapRef = useRef<maplibregl.Map | null>(null);
   const mapContainer = useRef<HTMLDivElement | null>(null);
-  const markersRef = useRef<maplibregl.Marker[]>([]);
+  const markersRef = useRef<Record<string, maplibregl.Marker>>({});
+  const centerMarkerRef = useRef<maplibregl.Marker | null>(null);
+  const selectedTherapistMarkerRef = useRef<maplibregl.Marker | null>(null);
 
-  // initialize map once
+  useEffect(() => {
+    if (!mapRef.current || !selectedTherapistId) return;
+
+    const map = mapRef.current;
+
+    if (selectedTherapistMarkerRef.current) {
+      const marker = selectedTherapistMarkerRef.current;
+      const lngLat = marker.getLngLat();
+
+      const newMarker = new maplibregl.Marker({
+        color: 'green',
+      }).setLngLat([
+        lngLat.lng,
+        lngLat.lat,
+      ]);
+      selectedTherapistMarkerRef.current.remove();
+      marker.remove();
+
+      newMarker.addTo(map);
+    }
+
+    const oldMarker = markersRef.current[selectedTherapistId];
+    const lngLat = oldMarker.getLngLat();
+
+    //todo check what actually happens if no marker is found
+    if (!oldMarker) console.warn(`No marker found for therapist`);
+
+    oldMarker.remove();
+
+    const marker = new maplibregl.Marker({
+        color: 'red',
+      }).setLngLat([
+        lngLat.lng,
+        lngLat.lat,
+    ]);
+
+    marker.addTo(map);
+    markersRef.current[selectedTherapistId] = marker;
+    selectedTherapistMarkerRef.current = marker;
+
+    map.flyTo({ 
+      speed: 2,
+      center: [lngLat.lng, lngLat.lat], zoom: 14
+    });
+
+  },[selectedTherapistId])
+    
+
   useEffect(() => {
     if (!mapContainer.current) return;
 
     const map = new maplibregl.Map({
       container: mapContainer.current,
       style: `https://api.maptiler.com/maps/streets/style.json?key=PPUA691BI7yVJ7CQUGBI`,
-      center: [10.0, 51.0],
+      center: center ?? [10.0, 51.0],
       zoom: 5,
+      maxBounds: [
+        [5, 46],
+        [16, 56],
+      ],
+      minZoom: 4,
     });
 
     mapRef.current = map;
-    return () => map.remove();
+    return () => {
+      map.remove();
+      mapRef.current = null;
+    };
   }, []);
 
-  // clear and render markers when locations update
+  useEffect(() => {
+    if (!mapRef.current || !center) return;
+
+    const map = mapRef.current;
+
+    if (centerMarkerRef.current) centerMarkerRef.current.remove();
+
+    if (map.getLayer('circle-fill')) {
+      map.removeLayer('circle-fill');
+    }
+    if (map.getLayer('circle-outline')) {
+      map.removeLayer('circle-outline');
+    }
+    if (map.getSource('circle-source')) {
+      map.removeSource('circle-source');
+    }
+
+    const circleGeoJson = turf.circle(
+      turf.point(center),
+      radius,
+      {
+        steps: 200,         
+        units: 'kilometers', 
+      }
+    );
+
+    map.addSource('circle-source', {
+      type: 'geojson',
+      data: circleGeoJson, 
+    });
+
+    map.addLayer({
+      id: 'circle-fill',
+      type: 'fill',
+      source: 'circle-source',
+      paint: {
+        'fill-color': 'rgba(0, 150, 135, 0.1)', 
+        'fill-outline-color': '#009688',
+      },
+    });
+
+    map.addLayer({
+      id: 'circle-outline',
+      type: 'line',
+      source: 'circle-source',
+      paint: {
+        'line-color': '#009688',
+        'line-width': 2,
+      },
+    });
+
+    map.flyTo({ 
+      speed: 3,
+      center, zoom: 12 - radius / 10
+    });
+
+    const marker = new maplibregl.Marker().setLngLat([
+      center[0],
+      center[1],
+    ]);
+
+    marker.addTo(map);
+    centerMarkerRef.current = marker;
+
+  }, [center, radius]);
+
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
 
-    // remove existing markers
-    markersRef.current.forEach(marker => marker.remove());
-    markersRef.current = [];
+    Object.values(markersRef.current).forEach(marker => {
+      marker.remove();
+    });
 
-    // add new markers
-    locations.forEach(loc => {
-      const marker = new maplibregl.Marker()
-        .setLngLat([loc.longitude, loc.latitude]);
+    // add new markers from props.locations
+    if (!locations) return;
+    locations.forEach((loc) => {
 
-      if (loc.name || loc.id) {
+      const marker = new maplibregl.Marker({
+        color: 'green',
+      }).setLngLat([
+        loc.location.coordinates[1],
+        loc.location.coordinates[0],
+      ]);
+
+      if (loc.therapistId) {
         marker.setPopup(
-          new maplibregl.Popup({ offset: 25 })
-            .setText(loc.name || loc.id)
+          new maplibregl.Popup({ offset: 25 }).setText(loc.therapistId)
         );
       }
 
       marker.addTo(map);
-      markersRef.current.push(marker);
+      markersRef.current[loc.therapistId] = marker;
     });
-  }, [locations]);
-
-  // handle form submission: geocode + fetch locations
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!address) return;
-    try {
-      // geocode address using MapTiler
-      const geoRes = await fetch(
-        `https://api.maptiler.com/geocoding/${encodeURIComponent(address)}.json?key=PPUA691BI7yVJ7CQUGBI&limit=1`
-      );
-      const geoData = await geoRes.json();
-      if (!geoData.features?.length) {
-        alert('Address not found');
-        return;
-      }
-      const [lng, lat] = geoData.features[0].geometry.coordinates;
-
-      // center map on the result
-      mapRef.current?.flyTo({ center: [lng, lat], zoom: 12 });
-
-      // fetch therapist locations within distance
-      const locRes = await fetch(
-        `http://localhost:3001/patient/locations?lng=${lng}&lat=${lat}&distance=${distance}`
-      );
-      if (!locRes.ok) throw new Error(`HTTP ${locRes.status}`);
-      const data: TherapistLocation[] = await locRes.json();
-      setLocations(data);
-    } catch (err) {
-      console.error('Search error', err);
-      alert('Failed to fetch locations');
-    }
-  };
+  }, [locations, radius, center]);
 
   return (
-    <div className="container my-4">
-      <form onSubmit={handleSubmit} className="mb-3 flex gap-2">
-        <input
-          type="text"
-          placeholder="Enter address"
-          value={address}
-          onChange={e => setAddress(e.target.value)}
-          className="flex-1 p-2 border rounded"
-        />
-        <input
-          type="number"
-          placeholder="Distance (km)"
-          value={distance}
-          onChange={e => setDistance(Number(e.target.value))}
-          className="w-24 p-2 border rounded"
-        />
-        <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">
-          Search
-        </button>
-      </form>
-
-      <div
+    <Container>
+      <Paper
         ref={mapContainer}
-        className="w-full rounded shadow"
-        style={{ height: '50vh' }}
+        shadow="md"
+        radius="md"
+        style={{ width: '100%', height: '70vh'}}
       />
-    </div>
+    </Container>
   );
 }
