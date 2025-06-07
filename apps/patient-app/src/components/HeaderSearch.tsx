@@ -7,6 +7,7 @@ import {
   NumberInput,
   Button,
   Box,
+  Flex,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { MantineLogo } from '@mantinex/mantine-logo';
@@ -80,43 +81,46 @@ export function HeaderSearch({ onSearch }: HeaderSearchProps) {
   return (
     <Box component="header" className={classes.header}>
       <div className={classes.inner}>
-        <Group>
-          <Burger opened={opened} onClick={toggle} size="sm" hiddenFrom="sm" />
-          <MantineLogo size={28} />
-        </Group>
-
-        <form onSubmit={handleSubmit}>
-          <Group gap="xs" align="flex-end">
-
-            <LocationAutocomplete onSearch={onLocationAutocompleteSearch} />
-
-            <NumberInput
-              label="Entfernung (km)"
-              min={0.1}
-              max={30}
-              decimalScale={1}
-              suffix={' km'}
-              value={distance}
-              onChange={(val) => setDistance(Number(val) || 0)}
-              required
-            />
-
-            <MultiSelect
-              label="Fachgebiete"
-              placeholder="z. B. VT, EMDR, Hypnose"
-              data={categoryOptions}
-              value={categories}
-              onChange={setCategories}
-              searchable
-            />
-
-            <Button type="submit">Suchen</Button>
+        <Group gap="xs" align="space-between">
+          <Group>
+            <Burger opened={opened} onClick={toggle} size="sm" hiddenFrom="sm" />
+            <MantineLogo size={28} />
           </Group>
-        </form>
+          <Group gap="xs" align="flex-end">
+            <form onSubmit={handleSubmit}>
 
-        {/* Zusätzliche Links (optional) */}
-        <Group ml={50} gap={5} className={classes.links} visibleFrom="sm">
-          {items}
+              <Flex direction="row" gap="xs" align="flex-end">
+                <LocationAutocomplete onSearch={onLocationAutocompleteSearch} />
+
+                <NumberInput
+                  label="Entfernung (km)"
+                  min={0.1}
+                  max={30}
+                  decimalScale={1}
+                  suffix={' km'}
+                  value={distance}
+                  onChange={(val) => setDistance(Number(val) || 0)}
+                  required
+                />
+
+                <MultiSelect
+                  label="Fachgebiete"
+                  placeholder="z. B. VT, EMDR, Hypnose"
+                  data={categoryOptions}
+                  value={categories}
+                  onChange={setCategories}
+                  searchable
+                />
+
+                <Button type="submit">Suchen</Button>
+              </Flex>
+              
+            </form>
+          </Group>
+          {/* Zusätzliche Links (optional) */}
+          <Group ml={50} gap={5} className={classes.links} visibleFrom="sm">
+            {items}
+          </Group>
         </Group>
       </div>
     </Box>

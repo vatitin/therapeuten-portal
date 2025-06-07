@@ -75,14 +75,20 @@ export function SearchMapPage() {
           <Box style={{ height: '70vh' }}>
             
             {therapists.length === 0 && (
-              <Text c="dimmed">Keine Therapeuten gefunden.</Text>
+              <Group gap="xs" justify="center">
+                <Text c="dimmed">Keine Therapeuten für diese Suche gefunden.</Text>
+              </Group>
+              
             )}
 
             <ScrollArea style={{ height: '100%' }} offsetScrollbars>
               <Flex direction="column" gap="md">
                 {therapists.map((t) => (
-                  <TherapistCard therapist={t} onClick={() => handleTherapistCardClick(t.id)} />
+                  <TherapistCard key={t.id} therapist={t} onClick={() => handleTherapistCardClick(t.id)} />
                 ))}
+                <Group gap="xs" justify="center">
+                  <Text c="dimmed">Keine Weiteren Therapeuten für diese Suche.</Text>
+                </Group>
               </Flex>
             </ScrollArea>
 

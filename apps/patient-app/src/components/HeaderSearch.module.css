@@ -1,4 +1,6 @@
 .header {
+  display: flex;
+  align-items: center; 
   height: 90px;
   margin-bottom: 80px;
   background-color: var(--mantine-color-body);
@@ -8,7 +10,7 @@
 }
 
 .inner {
-  height: 56px;
+  align-items: center; 
   display: flex;
   justify-content: space-between;
   align-items: center;
