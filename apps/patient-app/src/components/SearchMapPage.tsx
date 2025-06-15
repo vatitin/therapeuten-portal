@@ -6,6 +6,7 @@ import { Map } from '../components/Map';
 import type { TherapistLocation } from './therapistLocation';
 import { TherapistCard } from './TherapistCard';
 import type { TherapistDTO } from './therapist.dto';
+import { useNavigate } from 'react-router-dom';
 
 const mapboxAccessToken = 'pk.eyJ1IjoidmF0aXRpbiIsImEiOiJjbWF5OHg1YzUwNmpqMmpzNnR4MjljdXlvIn0.4eCQ0SxTDSfCIdGgpzK2ow';  
 
@@ -16,6 +17,7 @@ export function SearchMapPage() {
   const [radius, setRadius] = useState<number>(10);
   const [therapists, setTherapists] = useState<TherapistDTO[]>([]);
   const [selectedTherapistId, setSelectedTherapistId] = useState<string | null>(null);
+  const navigate = useNavigate()
 
 
   const handleSearch = async (values: HeaderSearchValues) => {
@@ -64,6 +66,12 @@ export function SearchMapPage() {
     setSelectedTherapistId(therapistId);
   }
 
+  const handleApplyClick = (therapistId: string) => {
+    console.log("Apply clicked for therapist:", therapistId);
+    navigate(`/therapist/${therapistId}`);
+  }
+
+
   return (
     <Container size="xl">
 
@@ -83,9 +91,15 @@ export function SearchMapPage() {
 
             <ScrollArea style={{ height: '100%' }} offsetScrollbars>
               <Flex direction="column" gap="md">
+
                 {therapists.map((t) => (
-                  <TherapistCard key={t.id} therapist={t} onClick={() => handleTherapistCardClick(t.id)} />
+                  <TherapistCard 
+                  key={t.id} 
+                  therapist={t} 
+                  onClickShowOnMap={() => handleTherapistCardClick(t.id)} 
+                  OnClickApply={() => handleApplyClick(t.id)} />
                 ))}
+
                 <Group gap="xs" justify="center">
                   <Text c="dimmed">Keine Weiteren Therapeuten für diese Suche.</Text>
                 </Group>

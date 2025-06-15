@@ -13,6 +13,9 @@ import { useDisclosure } from '@mantine/hooks';
 import { MantineLogo } from '@mantinex/mantine-logo';
 import classes from './HeaderSearch.module.css';
 import { LocationAutocomplete, type LocationAutocompleteValues } from './LocationAutocomplete';
+import { useKeycloak } from '@react-keycloak/web';
+import { AuthButtons } from './AuthButtons';
+import { ProfileContainer } from './ProfileContainer';
 
 export interface HeaderSearchValues {
   coordinates: number[];
@@ -31,6 +34,8 @@ export function HeaderSearch({ onSearch }: HeaderSearchProps) {
   const [coordinates, setCoordinates] = useState<number[]>([]);
   const [distance, setDistance] = useState(10);
   const [categories, setCategories] = useState<string[]>([]);
+  const { keycloak, initialized } = useKeycloak();
+  
 
   const categoryOptions = [
     { value: 'vt', label: 'Verhaltenstherapie' },
@@ -118,9 +123,19 @@ export function HeaderSearch({ onSearch }: HeaderSearchProps) {
             </form>
           </Group>
           {/* Zusätzliche Links (optional) */}
-          <Group ml={50} gap={5} className={classes.links} visibleFrom="sm">
+          <Group className={classes.links} visibleFrom="sm">
             {items}
           </Group>
+
+          <Group>
+            {!initialized ? null : keycloak?.authenticated ? (
+              <ProfileContainer />
+            ) : (
+              <AuthButtons />
+            )}
+          </Group>
+
+
         </Group>
       </div>
     </Box>

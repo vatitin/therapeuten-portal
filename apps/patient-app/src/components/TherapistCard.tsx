@@ -5,23 +5,22 @@ import type { TherapistDTO } from './therapist.dto';
 import { IconMapPin, IconUser } from '@tabler/icons-react';
 
 interface TherapistCardProps {
-  therapist: TherapistDTO;
-  onClick: () => void;
+    therapist: TherapistDTO;
+    onClickShowOnMap: () => void;
+    OnClickApply: () => void;
 }
 
-export function TherapistCard({ therapist, onClick }: TherapistCardProps) {
-  const theme = useMantineTheme();
-  const { colorScheme } = useMantineColorScheme();
-    
- const {
-    id,
-    firstName,
-    lastName,
-    addressLine1,
-    addressLine2,
-    city,
-    postalCode,
-  } = therapist;
+export function TherapistCard({ therapist, onClickShowOnMap, OnClickApply }: TherapistCardProps) {
+    const theme = useMantineTheme();
+        
+    const {
+        firstName,
+        lastName,
+        addressLine1,
+        addressLine2,
+        city,
+        postalCode,
+    } = therapist;
 
   return (
     <Paper 
@@ -46,9 +45,15 @@ export function TherapistCard({ therapist, onClick }: TherapistCardProps) {
             </Group>
 
             <Button 
-                onClick={onClick}
+                onClick={onClickShowOnMap}
             >
                 Auf Karte anzeigen
+            </Button>
+            <Button 
+                color="green"
+                onClick={OnClickApply}
+            >
+                Für Warteliste anmelden
             </Button>
 
         </Stack>

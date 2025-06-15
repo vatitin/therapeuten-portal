@@ -1,14 +1,15 @@
-import { BrowserRouter } from "react-router-dom"
 import '@mantine/core/styles.css';
-import { SearchMapPage } from "./components/SearchMapPage";
+import { AppRoutes } from './AppRoutes';
+import { BrowserRouter, Router } from 'react-router-dom';
 
 function App() {
+
   return (
-    <>
+    <div className="App">
       <BrowserRouter>
-        <SearchMapPage />
+        <AppRoutes />
       </BrowserRouter>
-    </>
+    </div>
   )
 }
 

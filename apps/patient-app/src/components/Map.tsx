@@ -1,14 +1,14 @@
 // src/components/Map.tsx
 import 'maplibre-gl/dist/maplibre-gl.css';
 import maplibregl, { GeoJSONSource } from 'maplibre-gl';
-import { useEffect, useRef } from 'react';
-import { Container, Paper } from '@mantine/core';
+import { use, useEffect, useRef } from 'react';
+import { Box, Container, Paper } from '@mantine/core';
 import type { TherapistLocation } from './therapistLocation';
 import * as turf from '@turf/turf';
 
 interface MapProps {
   locations: TherapistLocation[];
-  radius: number;
+  radius?: number;
   center?: [number, number];
   selectedTherapistId?: string | null;
 }
@@ -21,6 +21,8 @@ export function Map({ locations, center, radius, selectedTherapistId }: MapProps
   const selectedTherapistMarkerRef = useRef<maplibregl.Marker | null>(null);
 
   useEffect(() => {
+        console.log("mapcontainer useEffect 1")
+
     if (!mapRef.current || !selectedTherapistId) return;
 
     const map = mapRef.current;
@@ -70,6 +72,7 @@ export function Map({ locations, center, radius, selectedTherapistId }: MapProps
 
   useEffect(() => {
     if (!mapContainer.current) return;
+    console.log("mapcontainer useEffect 2")
 
     const map = new maplibregl.Map({
       container: mapContainer.current,
@@ -83,7 +86,10 @@ export function Map({ locations, center, radius, selectedTherapistId }: MapProps
       minZoom: 4,
     });
 
-    mapRef.current = map;
+    map.once('load', () => {
+      mapRef.current = map;
+    });
+
     return () => {
       map.remove();
       mapRef.current = null;
@@ -91,21 +97,33 @@ export function Map({ locations, center, radius, selectedTherapistId }: MapProps
   }, []);
 
   useEffect(() => {
+        console.log("mapcontainer useEffect 3")
+
     if (!mapRef.current || !center) return;
 
     const map = mapRef.current;
 
     if (centerMarkerRef.current) centerMarkerRef.current.remove();
 
-    if (map.getLayer('circle-fill')) {
-      map.removeLayer('circle-fill');
-    }
-    if (map.getLayer('circle-outline')) {
-      map.removeLayer('circle-outline');
-    }
-    if (map.getSource('circle-source')) {
-      map.removeSource('circle-source');
-    }
+    if (map.getLayer('circle-fill')) map.removeLayer('circle-fill');
+    if (map.getLayer('circle-outline')) map.removeLayer('circle-outline');
+    if (map.getSource('circle-source')) map.removeSource('circle-source');
+    
+    const marker = new maplibregl.Marker().setLngLat([
+      center[0],
+      center[1],
+    ]);
+
+    marker.addTo(map);
+    centerMarkerRef.current = marker;
+
+  }, [center]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+
+    if(!radius || !map || !center) return;
+    console.log("mapcontainer useEffect 4")
 
     const circleGeoJson = turf.circle(
       turf.point(center),
@@ -145,18 +163,11 @@ export function Map({ locations, center, radius, selectedTherapistId }: MapProps
       speed: 3,
       center, zoom: 12 - radius / 10
     });
-
-    const marker = new maplibregl.Marker().setLngLat([
-      center[0],
-      center[1],
-    ]);
-
-    marker.addTo(map);
-    centerMarkerRef.current = marker;
-
-  }, [center, radius]);
+  }, [radius, center])
 
   useEffect(() => {
+        console.log("mapcontainer useEffect 5")
+
     const map = mapRef.current;
     if (!map) return;
 
@@ -187,13 +198,9 @@ export function Map({ locations, center, radius, selectedTherapistId }: MapProps
   }, [locations, radius, center]);
 
   return (
-    <Container>
-      <Paper
-        ref={mapContainer}
-        shadow="md"
-        radius="md"
-        style={{ width: '100%', height: '70vh'}}
-      />
-    </Container>
+    <Box 
+      ref={mapContainer}
+      style={{ width: '100%', height: '100%' }}
+    />
   );
 }
