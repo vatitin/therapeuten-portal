@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const createApiClient = (token: string) => {
+const createApiClient = (token: string | null = null) => {
   const client = axios.create({
     headers: {
       'Content-Type': 'application/json',

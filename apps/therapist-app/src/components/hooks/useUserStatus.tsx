@@ -5,7 +5,6 @@ import { hasLocalTherapist } from '../../endpoints';
 
 export const useUserStatus = () => {
     const { keycloak, initialized } = useKeycloak();
-    const [statusChecked, setStatusChecked] = useState(false);
     const [hasProfile, setHasProfile] = useState(false);
 
     useEffect(() => {
@@ -28,14 +27,12 @@ export const useUserStatus = () => {
                 }
             } catch (err) {
                 console.error('Failed to fetch user status', err);
-            } finally {
-                setStatusChecked(true);
-            }
+            } 
         }
     };
 
     fetchStatus();
-    }, [keycloak.authenticated, initialized, hasProfile, statusChecked]);
+    }, [keycloak.authenticated, initialized, hasProfile, keycloak?.token]);
 
-    return { hasProfile, statusChecked };
+    return { hasProfile };
 };

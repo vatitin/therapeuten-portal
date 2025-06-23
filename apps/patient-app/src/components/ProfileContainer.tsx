@@ -1,5 +1,5 @@
 // ProfileContainer.tsx
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import cx from 'clsx';
 import {
   Avatar,
@@ -9,23 +9,25 @@ import {
   Menu,
   Text,
   UnstyledButton,
-  useMantineTheme,
 } from '@mantine/core';
 import { IconChevronDown, IconSettings, IconLogout, IconPlayerPause, IconTrash } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
 import { useKeycloak } from '@react-keycloak/web';
 import classes from './Header.module.css';
-
-const user = {
-  name: 'Jane Spoonfighter',
-  email: 'janspoon@fighter.dev',
-};
+import { useUserStatus } from '../hooks/useUserStatus';
+import { usePatient } from '../hooks/usePatient';
+import type { PatientType } from '../types/patient.types';
 
 export function ProfileContainer() {
-  const theme = useMantineTheme();
   const [opened, { toggle }] = useDisclosure(false);
   const [userMenuOpened, setUserMenuOpened] = useState(false);
   const { keycloak, initialized } = useKeycloak();
+  const { hasProfile } = useUserStatus();
+  const patientProfile = usePatient();
+
+  useEffect(() => {
+    if(patientProfile.loading || patientProfile.error) return;
+  },[patientProfile])
 
   const handleLogout = () => {
     if (initialized) {
@@ -51,9 +53,9 @@ export function ProfileContainer() {
               className={cx(classes.user, { [classes.userActive]: userMenuOpened })}
             >
               <Group gap={7}>
-                <Avatar alt={user.name} radius="xl" size={20} />
+                <Avatar alt={patientProfile.patient?.firstName + " " + patientProfile.patient?.lastName} radius="xl" size={20} />
                 <Text fw={500} size="sm" lh={1} mr={3}>
-                  {user.name}
+                  {patientProfile.patient?.firstName + " " + patientProfile.patient?.lastName}
                 </Text>
                 <IconChevronDown size={12} stroke={1.5} />
               </Group>

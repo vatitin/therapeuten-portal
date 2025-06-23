@@ -1,29 +1,32 @@
 import { useUserStatus } from "./hooks/useUserStatus";
-import { useEffect } from "react";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom"
 import '@mantine/core/styles.css';
 import { SearchMapPage } from "./components/SearchMapPage";
 import { SetProfile } from "./components/SetProfile";
 import { ApplyForTherapist } from "./components/ApplyForTherapist";
+import { useKeycloak } from "@react-keycloak/web";
+import { useEffect } from "react";
 
 export function AppRoutes() {
 
-    const { hasProfile, statusChecked } = useUserStatus();
+    const { hasProfile } = useUserStatus();
     const location = useLocation();
+    const {keycloak} = useKeycloak();
+    const navigate = useNavigate();
 
-    if (!statusChecked) return null;
+    useEffect(() => {
+        if (hasProfile === undefined) return;
+        if (!hasProfile && location.pathname !== '/setProfile' && keycloak.authenticated) {
+            navigate("/setProfile");
+        }
+    }, [hasProfile, keycloak])
 
-    if (!hasProfile && location.pathname !== '/setProfile') {
-        return <Navigate to="/setProfile" replace />;
-    }
-    
-  return (
-
+        
+    return (
         <Routes>
-            <Route path="/setProfile" element={<SetProfile />} />
             <Route path="/" element={<SearchMapPage />} />
+            <Route path="/setProfile" element={<SetProfile />} />
             <Route path="/therapist/:id" element={<ApplyForTherapist />} />
         </Routes>
-    
-  );
+    );
 }

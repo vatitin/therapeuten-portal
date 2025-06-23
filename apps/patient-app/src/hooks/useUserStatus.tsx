@@ -2,39 +2,30 @@ import { useEffect, useState } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
 import createApiClient from '../components/APIService';
 
-export const useUserStatus = () => {
-    const { keycloak, initialized } = useKeycloak();
-    const [statusChecked, setStatusChecked] = useState(false);
-    const [hasProfile, setHasProfile] = useState(false);
+export function useUserStatus() {
+  const { keycloak, initialized } = useKeycloak();
+  const [hasProfile, setHasProfile] = useState<boolean | undefined>(undefined);
 
-    useEffect(() => {
-    const fetchStatus = async () => {
-        if (!initialized) {
-            return;
-        }
-        if (!keycloak.authenticated) {
-            console.log("User is not authenticated");
-            return;
-        }
-        if (!hasProfile) {
-            try {
-                const apiClient = createApiClient(keycloak.token ?? "");
-                const result = await apiClient.get('http://localhost:3001/patient/hasLocalPatient');
-                if (!result.data) {
-                    return;
-                } else {
-                    setHasProfile(true);
-                }
-            } catch (err) {
-                console.error('Failed to fetch user status', err);
-            } finally {
-                setStatusChecked(true);
-            }
-        }
-    };
+  useEffect(() => {
+    if (!initialized) return;        
+    if (!keycloak.authenticated) {
+      setHasProfile(undefined);                     
+      return;
+    }
 
-    fetchStatus();
-    }, [keycloak.authenticated, initialized, hasProfile, statusChecked]);
+  (async () => {
+    try {
+      const api = createApiClient(keycloak.token);
+      const { data } = await api.get(
+        'http://localhost:3001/patient/hasLocalPatient'
+      );
+      console.log("set hasProfile", data)
+      setHasProfile(data);
+    } catch {
+      setHasProfile(false);
+    } 
+  })();
+  }, [initialized, keycloak.authenticated, keycloak.token, hasProfile]);
 
-    return { hasProfile, statusChecked };
-};
+  return { hasProfile };
+}

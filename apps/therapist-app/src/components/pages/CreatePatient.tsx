@@ -1,141 +1,134 @@
-import React, { useState } from 'react';
+// src/pages/CreatePatient.tsx
+import { Container, Title, Paper, Stack, Group, TextInput, Button, Combobox, Input, InputBase, useCombobox } from '@mantine/core';
+import { useForm } from '@mantine/form';
 import { useNavigate, useParams } from 'react-router-dom';
-import { addPatientWithStatus } from '../../endpoints';
-import createApiClient from '../../APIService';
 import { useKeycloak } from '@react-keycloak/web';
+import createApiClient from '../../APIService';
+import { addPatientWithStatus } from '../../endpoints';
 
-function CreatePatient() {
+export function CreatePatient() {
   const { patientStatus } = useParams();
   const navigate = useNavigate();
   const { keycloak } = useKeycloak();
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    gender: '',
-    phoneNumber: '',
+
+  const form = useForm({
+    initialValues: {
+      firstName:   '',
+      lastName:    '',
+      email:       '',
+      phoneNumber: '',
+      gender:      '',
+    },
+    validate: {
+      firstName:   (v) => (v.trim().length < 2 ? 'Min. 2 Zeichen' : null),
+      lastName:    (v) => (v.trim().length < 2 ? 'Min. 2 Zeichen' : null),
+      email:       (v) => (/^\S+@\S+\.\S+$/.test(v) ? null : 'Ungültige E-Mail'),
+    },
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const genders = ['weiblich', 'männlich', 'divers', 'keine Angabe'];
 
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const genderOptions = genders.map((gender) => (
+    <Combobox.Option value={gender} key={gender}>
+      {gender}
+    </Combobox.Option>
+  ));
+
+  const combobox = useCombobox({
+    onDropdownClose: () => combobox.resetSelectedOption(),
+  });
+
+  const handleSubmit = async (values: typeof form.values) => {
     try {
       if (!patientStatus) {
-        console.error('No patient status provided');
+        form.setErrors({ firstName: 'Patient-Status fehlt in URL' });
         return;
       }
-      const apiClient = createApiClient(keycloak.token ?? "");
-      await apiClient.post(addPatientWithStatus(patientStatus), formData);
+      const payload = {
+        ...values,
+        gender: !values.gender || values.gender === 'keine Angabe' ? null : values.gender,
+      };
+      const api = createApiClient(keycloak.token);
+      await api.post(addPatientWithStatus(patientStatus), payload);
       navigate(`/myPatients/${patientStatus}`);
-    } catch (error) {
-      console.error('Error creating patient:', error);
+    } catch (err) {
+      form.setFieldError('firstName', 'Fehler beim Speichern');
+      console.error(err);
     }
   };
 
   return (
-    <div className="container">
-      <form onSubmit={onSubmit}>
-        <div className="mb-3">
-          <label htmlFor="firstName" className="form-label">
-            Vorname
-          </label>
-          <input
-            className="form-control"
-            id="firstName"
-            name="firstName"
-            placeholder="Max"
-            value={formData.firstName}
-            onChange={handleChange}
-          />
-        </div>
+    <Container size="xs" >
+      <Title order={2} ta="center" fw={700}>
+        Patient hinzufügen
+      </Title>
 
-        <div className="mb-3">
-          <label htmlFor="lastName" className="form-label">
-            Nachname
-          </label>
-          <input
-            className="form-control"
-            id="lastName"
-            name="lastName"
-            placeholder="Mustermann"
-            value={formData.lastName}
-            onChange={handleChange}
-          />
-        </div>
+      <Paper withBorder shadow="md" p="xl" mt="xl">
+        <form onSubmit={form.onSubmit(handleSubmit)}>
+          <Stack gap="md">
+            <Group grow>
+              <TextInput
+                label="Vorname"
+                placeholder="Max"
+                required
+                {...form.getInputProps('firstName')}
+              />
+              <TextInput
+                label="Nachname"
+                placeholder="Mustermann"
+                required
+                {...form.getInputProps('lastName')}
+              />
+            </Group>
 
-        <div className="mb-3">
-          <label htmlFor="email">Email</label>
-          <input
-            className="form-control"
-            id="email"
-            name="email"
-            placeholder="meine@email.com"
-            value={formData.email}
-            onChange={handleChange}
-          />
-        </div>
+            <TextInput
+              label="E-Mail"
+              type="email"
+              placeholder="max@example.com"
+              required
+              {...form.getInputProps('email')}
+            />
 
-        <div className="mb-3">
-          <label htmlFor="phoneNumber">Handynummer</label>
-          <input
-            className="form-control"
-            id="phoneNumber"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleChange}
-          />
-        </div>
+            <TextInput
+              label="Handynummer"
+              placeholder="+49 160 1234567"
+              {...form.getInputProps('phoneNumber')}
+            />
 
-        <div className="mb-3">
-          <label className="d-block">Geschlecht:</label>
+            <Combobox
+              position="bottom-start" 
+              middlewares={{ flip: false }}   
+              store={combobox}
+              onOptionSubmit={(val) => {
+                form.setFieldValue('gender',(val));
+                combobox.closeDropdown();
+              }}
+            >
+              <Combobox.Target>
+                <InputBase              
+                  label="Geschlecht"
+                  component="button"
+                  type="button"
+                  pointer
+                  rightSection={<Combobox.Chevron />}
+                  rightSectionPointerEvents="none"
+                  onClick={() => combobox.toggleDropdown()}
+                >
+                  {form.values.gender || <Input.Placeholder>Auswählen</Input.Placeholder>}
+                </InputBase>
+              </Combobox.Target>
 
-          <input
-            type="radio"
-            className="btn-check"
-            id="genderM"
-            name="gender"
-            value="M"
-            autoComplete="off"
-            onChange={handleChange}
-          />
-          <label className="btn btn-outline-secondary" htmlFor="genderM">
-            Männlich
-          </label>
+              <Combobox.Dropdown>
+                <Combobox.Options>{genderOptions}</Combobox.Options>
+              </Combobox.Dropdown>
+            </Combobox>
+          </Stack>
 
-          <input
-            type="radio"
-            className="btn-check"
-            id="genderW"
-            name="gender"
-            value="W"
-            autoComplete="off"
-            onChange={handleChange}
-          />
-          <label className="btn btn-outline-secondary" htmlFor="genderW">
-            Weiblich
-          </label>
-
-          <input
-            type="radio"
-            className="btn-check"
-            id="genderD"
-            name="gender"
-            value="D"
-            autoComplete="off"
-            onChange={handleChange}
-          />
-          <label className="btn btn-outline-secondary" htmlFor="genderD">
-            Divers
-          </label>
-        </div>
-
-        <button type="submit">Hinzufügen</button>
-      </form>
-    </div>
+          <Button fullWidth mt="xl" type="submit">
+            Hinzufügen
+          </Button>
+        </form>
+      </Paper>
+    </Container>
   );
 }
-
-export { CreatePatient };

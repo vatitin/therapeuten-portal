@@ -1,23 +1,23 @@
-// src/components/Map.tsx
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { Group, Paper, Stack, Text, useMantineTheme, useMantineColorScheme, UnstyledButton, Button, Container, Flex, Textarea, Box } from '@mantine/core';
+import { Group, Paper, Stack, Text, Button, Container, Textarea, Box } from '@mantine/core';
 import type { TherapistDTO } from './therapist.dto';
 import { IconMapPin, IconUser } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import createApiClient from './APIService';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Map } from '../components/Map';
 import { useKeycloak } from '@react-keycloak/web';
 
 export function ApplyForTherapist() {
-    const theme = useMantineTheme();
     const [therapist, setTherapist] = useState<TherapistDTO>();
+    const [applicationText, setApplicationText] = useState('');
     const { id } = useParams();
     const { keycloak, initialized } = useKeycloak();
     
     useEffect(() => {
 
         const fetchTherapist = async () => {
+            console.log("fetch teheerapist dfor apply for the")
             try {
                 const apiClient = createApiClient();
                 const therapistResult = await apiClient.get(`http://localhost:3001/patient/getTherapist/${id}`); 
@@ -47,7 +47,7 @@ export function ApplyForTherapist() {
             const token = keycloak.token;
 
             const apiClient = createApiClient(token);
-            const therapistResult = await apiClient.post(`http://localhost:3001/patient/applyTo/${id}`); 
+            const therapistResult = await apiClient.post(`http://localhost:3001/patient/applyTo/${id}`, {applicationText}); 
 
             console.log("locRes", therapistResult.data)
             return;
@@ -96,7 +96,8 @@ export function ApplyForTherapist() {
                         <Map 
                         locations={[{therapistId: therapist.id, location: therapist.location}]} 
                         center={therapist.location.coordinates} 
-                        selectedTherapistId={therapist.id} />
+                        selectedTherapistId={therapist.id} 
+                        radius = {2}/>
                     </Box>
                 </Group>
             </Paper>
@@ -110,18 +111,21 @@ export function ApplyForTherapist() {
 
                 <Stack>
                     <Textarea
-                        label="Autosize with 4 rows max"
-                        placeholder="Autosize with 4 rows max"
+                        label="Bewerbungstext"
+                        placeholder="Suche Platz weil..."
                         autosize
                         variant="filled"
                         minRows={6}
                         maxRows={10}
+                        value={applicationText} 
+                        onChange={e => setApplicationText(e.currentTarget.value)}
                     />
                     <Button 
                         color="green"
-                        onClick={() => {applyForTherapist()}}
+                        onClick={applyForTherapist}
+                        disabled={!applicationText.trim()}  
                     >
-                        Für Warteliste anmelden
+                        Für Warteliste anmelden //todo show notification if setApplicationText empty
                     </Button>
                 </Stack>
             </Paper>

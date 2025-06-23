@@ -1,5 +1,5 @@
 // src/components/HeaderSearch.tsx
-import { useState, useRef, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import {
   Burger,
   Group,

@@ -1,6 +1,5 @@
-// src/components/Map.tsx
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { Group, Paper, Stack, Text, useMantineTheme, useMantineColorScheme, UnstyledButton, Button } from '@mantine/core';
+import { Group, Paper, Stack, Text, Button } from '@mantine/core';
 import type { TherapistDTO } from './therapist.dto';
 import { IconMapPin, IconUser } from '@tabler/icons-react';
 
@@ -11,7 +10,6 @@ interface TherapistCardProps {
 }
 
 export function TherapistCard({ therapist, onClickShowOnMap, OnClickApply }: TherapistCardProps) {
-    const theme = useMantineTheme();
         
     const {
         firstName,

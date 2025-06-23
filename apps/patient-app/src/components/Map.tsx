@@ -1,8 +1,8 @@
 // src/components/Map.tsx
 import 'maplibre-gl/dist/maplibre-gl.css';
-import maplibregl, { GeoJSONSource } from 'maplibre-gl';
-import { use, useEffect, useRef } from 'react';
-import { Box, Container, Paper } from '@mantine/core';
+import maplibregl from 'maplibre-gl';
+import { useEffect, useRef, useState } from 'react';
+import { Box } from '@mantine/core';
 import type { TherapistLocation } from './therapistLocation';
 import * as turf from '@turf/turf';
 
@@ -19,11 +19,12 @@ export function Map({ locations, center, radius, selectedTherapistId }: MapProps
   const markersRef = useRef<Record<string, maplibregl.Marker>>({});
   const centerMarkerRef = useRef<maplibregl.Marker | null>(null);
   const selectedTherapistMarkerRef = useRef<maplibregl.Marker | null>(null);
+  const [mapReady, setMapReady] = useState(false);
+  const [markersRefReady, setMarkersRefReady] = useState(false);
 
   useEffect(() => {
-        console.log("mapcontainer useEffect 1")
-
-    if (!mapRef.current || !selectedTherapistId) return;
+    console.log("mapref.current, therID,  mapReady, markersReefREady", !!mapRef.current, !!selectedTherapistId, !!mapReady, !!markersRefReady)
+    if (!mapRef.current || !selectedTherapistId || !mapReady || !markersRefReady) return;
 
     const map = mapRef.current;
 
@@ -32,32 +33,33 @@ export function Map({ locations, center, radius, selectedTherapistId }: MapProps
       const lngLat = marker.getLngLat();
 
       const newMarker = new maplibregl.Marker({
-        color: 'green',
       }).setLngLat([
         lngLat.lng,
         lngLat.lat,
       ]);
+
       selectedTherapistMarkerRef.current.remove();
       marker.remove();
-
+      console.log("add therapist marker", marker)
       newMarker.addTo(map);
     }
 
     const oldMarker = markersRef.current[selectedTherapistId];
-    const lngLat = oldMarker.getLngLat();
-
+    
     //todo check what actually happens if no marker is found
     if (!oldMarker) console.warn(`No marker found for therapist`);
+
+    const lngLat = markersRef.current[selectedTherapistId].getLngLat();
 
     oldMarker.remove();
 
     const marker = new maplibregl.Marker({
-        color: 'red',
+        color: 'green',
       }).setLngLat([
         lngLat.lng,
         lngLat.lat,
     ]);
-
+    console.log("setMarker", marker)
     marker.addTo(map);
     markersRef.current[selectedTherapistId] = marker;
     selectedTherapistMarkerRef.current = marker;
@@ -67,9 +69,8 @@ export function Map({ locations, center, radius, selectedTherapistId }: MapProps
       center: [lngLat.lng, lngLat.lat], zoom: 14
     });
 
-  },[selectedTherapistId])
+  },[selectedTherapistId, mapReady, markersRefReady])
     
-
   useEffect(() => {
     if (!mapContainer.current) return;
     console.log("mapcontainer useEffect 2")
@@ -88,6 +89,7 @@ export function Map({ locations, center, radius, selectedTherapistId }: MapProps
 
     map.once('load', () => {
       mapRef.current = map;
+      setMapReady(true);
     });
 
     return () => {
@@ -97,12 +99,11 @@ export function Map({ locations, center, radius, selectedTherapistId }: MapProps
   }, []);
 
   useEffect(() => {
-        console.log("mapcontainer useEffect 3")
-
-    if (!mapRef.current || !center) return;
-
     const map = mapRef.current;
 
+    console.log("radius, map, center", !!radius, !!map, !!center)
+    if(!radius || !mapReady || !center || !map) return;
+    
     if (centerMarkerRef.current) centerMarkerRef.current.remove();
 
     if (map.getLayer('circle-fill')) map.removeLayer('circle-fill');
@@ -110,21 +111,12 @@ export function Map({ locations, center, radius, selectedTherapistId }: MapProps
     if (map.getSource('circle-source')) map.removeSource('circle-source');
     
     const marker = new maplibregl.Marker().setLngLat([
-      center[0],
       center[1],
+      center[0],
     ]);
 
     marker.addTo(map);
     centerMarkerRef.current = marker;
-
-  }, [center]);
-
-  useEffect(() => {
-    const map = mapRef.current;
-
-    if(!radius || !map || !center) return;
-    console.log("mapcontainer useEffect 4")
-
     const circleGeoJson = turf.circle(
       turf.point(center),
       radius,
@@ -163,13 +155,12 @@ export function Map({ locations, center, radius, selectedTherapistId }: MapProps
       speed: 3,
       center, zoom: 12 - radius / 10
     });
-  }, [radius, center])
+  }, [radius, center, mapReady])
 
   useEffect(() => {
-        console.log("mapcontainer useEffect 5")
 
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || !mapReady) return;
 
     Object.values(markersRef.current).forEach(marker => {
       marker.remove();
@@ -180,10 +171,9 @@ export function Map({ locations, center, radius, selectedTherapistId }: MapProps
     locations.forEach((loc) => {
 
       const marker = new maplibregl.Marker({
-        color: 'green',
       }).setLngLat([
-        loc.location.coordinates[1],
         loc.location.coordinates[0],
+        loc.location.coordinates[1],
       ]);
 
       if (loc.therapistId) {
@@ -195,7 +185,8 @@ export function Map({ locations, center, radius, selectedTherapistId }: MapProps
       marker.addTo(map);
       markersRef.current[loc.therapistId] = marker;
     });
-  }, [locations, radius, center]);
+    setMarkersRefReady(true);
+  }, [locations, radius, center, mapReady]);
 
   return (
     <Box 

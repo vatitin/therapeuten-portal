@@ -19,18 +19,18 @@ import { useKeycloak } from '@react-keycloak/web';
 import { useUserStatus } from '../hooks/useUserStatus';
 
 export function SetProfile() {
-  const hasProfile = useUserStatus();
+  const { hasProfile } = useUserStatus();
   const navigate = useNavigate();
   const { keycloak, initialized } = useKeycloak();
 
   const genders = ['weiblich', 'männlich', 'divers', 'keine Angabe'];
 
   useEffect(() => {
-    if (hasProfile) {
-      //todo check when or where to actually use this redirect
-      //navigate('/');
+    if (hasProfile || !keycloak.authenticated) {
+      console.log("setProfile, nav to Home") 
+      navigate('/');
     }
-  }, [hasProfile]);
+  }, [hasProfile, keycloak]);
 
   const form = useForm({
     initialValues: {
@@ -67,7 +67,7 @@ export function SetProfile() {
         return;
       }
 
-      const api = createApiClient(keycloak.token ?? '');
+      const api = createApiClient(keycloak.token);
       await api.post('http://localhost:3001/patient/createPatient', payload);
       navigate('/');
     } catch (err: any) {
@@ -76,7 +76,7 @@ export function SetProfile() {
   };
 
   return (
-    <Container size={460} my={60}>
+    <Container size="xs" >
       <Title order={2} ta="center" fw={700}>
         Profil anlegen
       </Title>

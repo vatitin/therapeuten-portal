@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import {
   TextInput,
   Paper,
@@ -22,10 +22,10 @@ export function SetProfile() {
   const mapboxAccessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || '';  
 
   useEffect(() => {
-    if (hasProfile) {
-      //navigate('/');
+    if (hasProfile || !keycloak.authenticated) {
+      navigate('/');
     }
-  }, [hasProfile]);
+  }, [hasProfile, keycloak]);
 
   const form = useForm({
     initialValues: {
@@ -111,7 +111,7 @@ export function SetProfile() {
   }, [form.values.addressLine2]);
 
   return (
-    <Container size={460} my={60}>
+    <Container size="xs" >
       <Title order={2} ta="center" fw={700}>
         Profil anlegen
       </Title>
