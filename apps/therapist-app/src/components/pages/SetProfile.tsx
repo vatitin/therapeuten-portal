@@ -22,8 +22,9 @@ export function SetProfile() {
   const mapboxAccessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || '';  
 
   useEffect(() => {
+    console.log("keycloak", keycloak.didInitialize)
     if (hasProfile || !keycloak.authenticated) {
-      navigate('/');
+      //navigate('/');
     }
   }, [hasProfile, keycloak]);
 
@@ -37,6 +38,7 @@ export function SetProfile() {
       postalCode:   '',
     },
     validate: {
+      //todo use mantine form validation!
       firstName:    (v) => (v.trim().length < 2 ? 'Min. 2 Zeichen' : null),
       lastName:     (v) => (v.trim().length < 2 ? 'Min. 2 Zeichen' : null),
       addressLine1: (v) => (v.trim().length === 0 ? 'Pflichtfeld' : null),
@@ -89,10 +91,12 @@ export function SetProfile() {
       console.log("long ot sub: " + payload.location.coordinates.toString())
 
       const api = createApiClient(keycloak.token ?? '');
-      await api.post(createTherapist, payload);
-      navigate('/');
+      const response = await api.post(createTherapist, payload);
+      console.log('response', response);
     } catch (err: any) {
       form.setFieldError('addressLine1', err.message || 'Fehler beim Speichern');
+    } finally {
+      navigate('/');
     }
   };
 

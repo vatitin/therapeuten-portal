@@ -7,4 +7,5 @@ export interface AssociationType {
   therapist: TherapistType;
   comment?: string;
   applicationText?: string;
+  status: string;
 }

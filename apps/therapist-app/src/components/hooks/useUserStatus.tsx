@@ -3,36 +3,47 @@ import { useKeycloak } from '@react-keycloak/web';
 import createApiClient from '../../APIService';
 import { hasLocalTherapist } from '../../endpoints';
 
-export const useUserStatus = () => {
-    const { keycloak, initialized } = useKeycloak();
-    const [hasProfile, setHasProfile] = useState(false);
+interface UserStatus {
+  hasProfile: boolean;
+  loading: boolean;
+}
 
-    useEffect(() => {
-    const fetchStatus = async () => {
-        if (!initialized) {
-            return;
-        }
-        if (!keycloak.authenticated) {
-            console.log("User is not authenticated");
-            return;
-        }
-        if (!hasProfile) {
-            try {
-                const apiClient = createApiClient(keycloak?.token ?? "");
-                const result = await apiClient.get(hasLocalTherapist);
-                if (!result.data) {
-                    return;
-                } else {
-                    setHasProfile(true);
-                }
-            } catch (err) {
-                console.error('Failed to fetch user status', err);
-            } 
-        }
+export const useUserStatus = (): UserStatus => {
+  const { keycloak, initialized } = useKeycloak();
+  const [state, setState] = useState<UserStatus>({
+    hasProfile: false,
+    loading: true,
+  });
+
+  useEffect(() => {
+    if (!initialized) return;
+
+    if (!keycloak.authenticated) {
+      setState({ hasProfile: false, loading: false });
+      return;
+    }
+
+    const fetchProfileStatus = async () => {
+      try {
+        const apiClient = createApiClient(keycloak.token ?? '');
+        const response = await apiClient.get<{ data: boolean }>(hasLocalTherapist);
+
+        setState({
+          hasProfile: Boolean(response.data),
+          loading: false,
+        });
+      } catch (error) {
+        console.error('Failed to fetch user status:', error);
+        setState(prev => ({ ...prev, loading: false }));
+      }
     };
 
-    fetchStatus();
-    }, [keycloak.authenticated, initialized, hasProfile, keycloak?.token]);
+    fetchProfileStatus();
+  }, [
+    initialized, 
+    keycloak.authenticated, 
+    keycloak.token,
+  ]);
 
-    return { hasProfile };
+  return state;
 };

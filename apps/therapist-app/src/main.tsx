@@ -8,7 +8,11 @@ import { MantineProvider } from '@mantine/core'
 import '@mantine/core/styles.css';
 
 createRoot(document.getElementById('root')!).render(
-  <ReactKeycloakProvider authClient={keycloak}>
+  <ReactKeycloakProvider 
+  authClient={keycloak}     
+  initOptions={{
+      onLoad: 'login-required',
+  }}>
     <StrictMode>
       <MantineProvider theme={{}} defaultColorScheme="auto" > 
         <App />

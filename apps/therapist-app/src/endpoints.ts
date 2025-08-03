@@ -11,8 +11,8 @@ export const patientsWithStatus = (status: string) =>
 export const deletePatientWithId = (id: string) =>
   `${THERAPIST_URL}/removePatient/${id}`;
 
-export const updatePatient = (id: string, status: string) =>
-  `${THERAPIST_URL}/updatePatient/${id}/${status}`;
+export const updatePatientStatus = (id: string, status: string) =>
+  `${THERAPIST_URL}/updatePatientStatus/${id}/${status}`;
 
 export const addPatientWithStatus = (status: string) =>
   `${THERAPIST_URL}/createPatient/${status}`;

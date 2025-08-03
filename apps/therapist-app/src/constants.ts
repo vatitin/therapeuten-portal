@@ -6,6 +6,6 @@ export const StatusType = {
 
 //todo change name because there is an AppRoutes component
 export const AppRoutes = {
-  myWaitingPatients: 'myPatients/waiting',
-  myActivePatients: 'myPatients/active',
+  myWaitingPatients: 'waitingPatients',
+  myActivePatients: 'activePatients',
 };

@@ -15,11 +15,10 @@ export function AppRoutes() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (hasProfile === undefined) return;
         if (!hasProfile && location.pathname !== '/setProfile' && keycloak.authenticated) {
             navigate("/setProfile");
         }
-    }, [hasProfile, keycloak])
+    }, [hasProfile, keycloak, location])
 
         
     return (
