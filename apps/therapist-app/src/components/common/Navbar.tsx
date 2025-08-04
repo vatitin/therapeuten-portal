@@ -15,7 +15,7 @@ export function NavbarSimple() {
   const { keycloak } = useKeycloak();
   const theme =useMantineTheme()
   const data: NavItem[] = [
-    { icon: IconHome,       label: 'Home',       path: '/' },
+    { icon: IconHome,       label: 'Home',       path: '/home' },
     { icon: IconListDetails, label: 'Warteliste', path: '/waitingPatients' },
     { icon: IconUser,        label: 'Patienten',  path: '/activePatients' },
     { icon: IconLogout,      label: 'Logout',     path: '/nan', onClick: () => keycloak.logout() },

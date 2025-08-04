@@ -36,7 +36,6 @@ export function HeaderSearch({ onSearch }: HeaderSearchProps) {
   const [categories, setCategories] = useState<string[]>([]);
   const { keycloak, initialized } = useKeycloak();
   
-
   const categoryOptions = [
     { value: 'vt', label: 'Verhaltenstherapie' },
     { value: 'tp', label: 'Tiefenpsychologisch fundierte Therapie' },

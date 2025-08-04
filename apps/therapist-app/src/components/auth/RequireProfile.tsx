@@ -15,21 +15,25 @@ export function RequireProfile({ children }: RequireProfileProps) {
   const navigate = useNavigate();
 
     useEffect(() => {
-        if(!loading) return;
+        if (loading) return;
         console.log("Checking user profile status:", {
+            loading,
             hasProfile,
             location,
             keycloak,
         });
+        if (!keycloak.authenticated) {
+            console.log("User not authenticated, redirecting to login");
+            keycloak.login({ redirectUri: window.location.href });
+            return;
+        }
         if (
-            !loading &&
-            keycloak.authenticated &&
             !hasProfile &&
             location.pathname !== "/setProfile"
         ) {
             navigate("/setProfile", { replace: true });
         }
-    }, [keycloak.authenticated, hasProfile, location.pathname, navigate]);
+    }, [loading, hasProfile, location.pathname, keycloak.authenticated]);
 
     if (loading) {
         return <Loader />;

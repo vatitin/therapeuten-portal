@@ -11,7 +11,7 @@ createRoot(document.getElementById('root')!).render(
   <ReactKeycloakProvider 
   authClient={keycloak}     
   initOptions={{
-      onLoad: 'login-required',
+      //onLoad: 'login-required',
   }}>
     <StrictMode>
       <MantineProvider theme={{}} defaultColorScheme="auto" > 
