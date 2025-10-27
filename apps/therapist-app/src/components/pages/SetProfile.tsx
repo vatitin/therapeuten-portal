@@ -34,7 +34,7 @@ export function SetProfile() {
       lastName:     '',
       addressLine1: '',
       addressLine2: '',
-      city:         '',
+      city:         'Karlsruhe',
       postalCode:   '',
     },
     validate: {
@@ -96,7 +96,7 @@ export function SetProfile() {
     } catch (err: any) {
       form.setFieldError('addressLine1', err.message || 'Fehler beim Speichern');
     } finally {
-      navigate('/');
+      navigate('/home');
     }
   };
 

@@ -7,14 +7,14 @@ import type { TherapistType } from '../../types/therapist.type';
 export function useTherapist() {
   const { keycloak, initialized } = useKeycloak();
 
-  const [therapist, setTherapist]   = useState<TherapistType | null>(null);
+  const [data, setData]   = useState<TherapistType | null>(null);
   const [loading, setLoading]   = useState(false);
   const [error,   setError]     = useState<Error | null>(null);
 
   useEffect(() => {
     if (!initialized) return;         
     if (!keycloak.authenticated) {  
-      setTherapist(null);
+      setData(null);
       return;
     }
 
@@ -30,11 +30,11 @@ export function useTherapist() {
           { signal: abort.signal }
         );
         console.log("data", data)
-        setTherapist(data);
+        setData(data);
       } catch (err) {
         if (err instanceof DOMException && err.name === 'AbortError') return;
         setError(err as Error);
-        setTherapist(null);
+        setData(null);
       } finally {
         setLoading(false);
       }
@@ -45,5 +45,5 @@ export function useTherapist() {
     return () => abort.abort();
   }, [initialized, keycloak.authenticated, keycloak.token]);
 
-  return { therapist, loading, error };
+  return { data, loading, error };
 }

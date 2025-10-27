@@ -3,10 +3,13 @@ import { AppShell, Burger, Group, Text, useMantineTheme } from '@mantine/core';
 import { MantineLogo } from '@mantinex/mantine-logo';
 import { useDisclosure } from '@mantine/hooks';
 import { NavbarSimple } from '../common/Navbar';
+import { useTherapist } from '../hooks/useTherapist';
+import { ProfileContainer } from '../common/ProfileContainer';
 
 export function AppLayout() {
   const [opened, { toggle }] = useDisclosure();
   const theme = useMantineTheme();
+  const therapist = useTherapist();
 
   return (
     <AppShell
@@ -18,7 +21,8 @@ export function AppLayout() {
         <Group h="100%" px="xl" justify="space-between">
           <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
           <MantineLogo size={30} />
-          <Text c="white" size="xl">Gregor Rheingeist</Text>
+          <Group></Group>
+          <ProfileContainer />
         </Group>
       </AppShell.Header>
 

@@ -34,6 +34,7 @@ export function SetProfile() {
 
   const form = useForm({
     initialValues: {
+      email: '',
       firstName:    '',
       lastName:     '',
       gender: '',
@@ -68,6 +69,9 @@ export function SetProfile() {
       }
 
       const api = createApiClient(keycloak.token);
+      payload.email = keycloak.tokenParsed?.email;
+      console.log('payload create patient:', payload);
+      
       await api.post('http://localhost:3001/patient/createPatient', payload);
       navigate('/');
     } catch (err: any) {
