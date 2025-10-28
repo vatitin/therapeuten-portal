@@ -1,20 +1,20 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
-import { useAssociations } from './useAssociations';
+import { useAssociations } from '../../hooks/useAssociations';
 import { PatientsTable } from './PatientsTable';
-import { PatientDetailsDrawer } from './PatientDetailsDrawer';
+import { PatientsDetailsDrawer } from './PatientsDetailsDrawer';
 import { ConfirmationModal } from './ConfirmationModal';
 import { Button, Container, Group, Title, Text, Stack, Divider } from '@mantine/core';
-import createApiClient from '../../APIService';
-import { deletePatientWithId, updatePatientStatus } from '../../endpoints';
-import { StatusType } from '../../constants';
-import type { AssociationType } from '../../types/association.type';
+import createApiClient from '../../../APIService';
+import { deletePatientWithId, updatePatientStatus } from '../../../endpoints';
+import { StatusType } from '../../../constants';
+import type { AssociationType } from '../../../types/association.type';
 
-export function ActivePatientsPage() {
+export function WaitingPatientsPage() {
   const { keycloak } = useKeycloak();
   const navigate = useNavigate();
-    const fetchAssociations = useAssociations(StatusType.ACTIVE, keycloak.token ?? "");
+    const fetchAssociations = useAssociations(StatusType.WAITING, keycloak.token ?? "");
 
   const [associations, setAssociations] = useState<AssociationType[]>([]);
   const [active, setActive] = useState<AssociationType | null>(null);
@@ -39,6 +39,7 @@ export function ActivePatientsPage() {
         console.log("deleted")
         await api.delete(deletePatientWithId(active.patient.id));
     } else {
+      console.log("activte pateint")
         await api.patch(updatePatientStatus(active.patient.id, StatusType.ACTIVE));
     }
 
@@ -57,19 +58,19 @@ export function ActivePatientsPage() {
           Patientenübersicht
         </Title>
         <Text size="lg">
-          Hier siehst du eine Liste aller aktiven Patienten . Klicke auf eine Zeile, um Details anzuzeigen oder Aktionen durchzuführen.
+          Hier siehst du eine Liste aller wartenden Patienten . Klicke auf eine Zeile, um Details anzuzeigen oder Aktionen durchzuführen.
         </Text>
         <Divider my="md" />
 
         <PatientsTable associations={associations} onRowClick={handleRowClick} />
 
         <Group justify='center'>
-          <Button onClick={() => navigate(`/addNewPatient/${StatusType.ACTIVE}`)}>
+          <Button onClick={() => navigate(`/addNewPatient/${StatusType.WAITING}`)}>
             Patient hinzufügen
           </Button>
         </Group>
 
-        <PatientDetailsDrawer
+        <PatientsDetailsDrawer
           opened={drawerOpen}
           association={active}
           onClose={() => setDrawerOpen(false)}

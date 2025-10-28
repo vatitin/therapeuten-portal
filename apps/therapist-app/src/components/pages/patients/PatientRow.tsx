@@ -1,5 +1,5 @@
 import { Table, Badge, Text } from '@mantine/core';
-import type { AssociationType } from '../../types/association.type';
+import type { AssociationType } from '../../../types/association.type';
 
 export function PatientRow({
   association,

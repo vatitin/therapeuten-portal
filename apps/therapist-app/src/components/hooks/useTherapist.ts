@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
 import createApiClient from '../../APIService';
 import type { TherapistType } from '../../types/therapist.type';
+import axios from 'axios';
 
 
 export function useTherapist() {
   const { keycloak, initialized } = useKeycloak();
 
-  const [data, setData]   = useState<TherapistType | null>(null);
+  const [data, setData]         = useState<TherapistType | null>(null);
   const [loading, setLoading]   = useState(false);
   const [error,   setError]     = useState<Error | null>(null);
 
@@ -33,6 +34,7 @@ export function useTherapist() {
         setData(data);
       } catch (err) {
         if (err instanceof DOMException && err.name === 'AbortError') return;
+        if (axios.isCancel(err)) return;
         setError(err as Error);
         setData(null);
       } finally {
@@ -43,7 +45,7 @@ export function useTherapist() {
     fetchTherapist();
 
     return () => abort.abort();
-  }, [initialized, keycloak.authenticated, keycloak.token]);
+  }, [initialized, keycloak.authenticated]);
 
   return { data, loading, error };
 }

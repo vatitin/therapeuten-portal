@@ -36,7 +36,7 @@ export function AppLayout() {
 
       <AppShell.Footer style={{ backgroundColor: theme.colors.gray[2] }}>
         <Text size="sm" c="dimmed" ta="center">
-          © 2025 Gregor Rheingeist. Alle Rechte vorbehalten.
+          © 2025 ... . Alle Rechte vorbehalten.
         </Text>
       </AppShell.Footer>
     </AppShell>

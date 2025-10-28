@@ -1,8 +1,10 @@
-import { Drawer, Stack, Text, Textarea, Group, ActionIcon, Card, Badge, Divider } from '@mantine/core';
+import { Drawer, Stack, Text, Group, ActionIcon, Card, Badge, Divider } from '@mantine/core';
 import { IconTrash, IconCheck } from '@tabler/icons-react';
-import type { AssociationType } from '../../types/association.type';
+import type { AssociationType } from '../../../types/association.type';
+import type { TherapistComment } from '../../../types/therapistComment.type';
+import CommentsSection from '../comments/CommentsSection';
 
-export function PatientDetailsDrawer({
+export function PatientsDetailsDrawer({
   opened,
   association,
   onClose,
@@ -10,28 +12,30 @@ export function PatientDetailsDrawer({
   onRemove,
 }: {
   opened: boolean;
-  association: AssociationType | null;
+  association: (AssociationType & { comments?: TherapistComment[] }) | null;
   onClose(): void;
   onActivate(): void;
   onRemove(): void;
 }) {
   if (!association) return null;
-  const { patient, applicationText } = association;
+
+  const { patient, applicationText, status } = association;
 
   return (
     <Drawer opened={opened} onClose={onClose} title="Patient" size="lg" position="right">
-      <Stack justify="center"
-      gap="md">
+      <Stack gap="md">
         <Card withBorder radius="md" p="md">
-          <Group mb="sm">
-            <Text fw={500} size="lg">
-              {patient.firstName} {patient.lastName}
-            </Text>
-            {association.status && (
-              <Badge color="blue" variant="light">
-                {association.status}
-              </Badge>
-            )}
+          <Group mb="sm" wrap="nowrap" justify="space-between">
+            <Group wrap="nowrap">
+              <Text fw={500} size="lg">
+                {patient.firstName} {patient.lastName}
+              </Text>
+              {status && (
+                <Badge color="blue" variant="light">
+                  {status}
+                </Badge>
+              )}
+            </Group>
           </Group>
 
           {applicationText && <Divider mb="sm" />}
@@ -50,7 +54,9 @@ export function PatientDetailsDrawer({
 
         <Divider />
 
-        <Textarea label="Kommentar" placeholder="Termin vereinbaren…" autosize minRows={6} />
+        <CommentsSection associationId={association.id} initialComments={association.comments ?? []} />
+          
+        <Divider />
 
         <Group grow>
           <ActionIcon color="green" onClick={onActivate} title="Auf Aktiv setzen">

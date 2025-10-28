@@ -1,6 +1,6 @@
 import { ScrollArea, Table, useMantineTheme } from '@mantine/core';
 import { PatientRow } from './PatientRow';
-import type { AssociationType } from '../../types/association.type';
+import type { AssociationType } from '../../../types/association.type';
 
 export function PatientsTable({
   associations,

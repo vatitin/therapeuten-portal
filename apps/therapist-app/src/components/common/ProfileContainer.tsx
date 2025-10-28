@@ -7,12 +7,14 @@ import {
   UnstyledButton,
   useMantineTheme,
 } from '@mantine/core';
-import { IconChevronDown, IconSettings, IconTrash } from '@tabler/icons-react';
+import { IconUser, IconChevronDown, IconSettings, IconTrash } from '@tabler/icons-react';
 import { useTherapist } from '../hooks/useTherapist';
+import { useNavigate } from 'react-router-dom';
 
 export function ProfileContainer() {
   const theme = useMantineTheme();
   const  therapistProfile = useTherapist();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (therapistProfile.error || therapistProfile.loading) return;
@@ -30,10 +32,10 @@ export function ProfileContainer() {
         <Menu.Target>
           <UnstyledButton>
             <Group gap={7}>
-              <Avatar alt={therapistProfile.data?.lastName + " " + therapistProfile.data?.firstName} radius="xl" size={30} />
               <Text fw={500} size="sm" lh={1} mr={3}>
                 {therapistProfile.data?.lastName + " " + therapistProfile.data?.firstName}
               </Text>
+              <IconUser size={30} />
               <IconChevronDown size={12} stroke={1.5} />
             </Group>
           </UnstyledButton>
@@ -41,7 +43,8 @@ export function ProfileContainer() {
 
         <Menu.Dropdown>
           <Menu.Label>Settings</Menu.Label>
-          <Menu.Item leftSection={<IconSettings size={16} stroke={1.5} />}>
+          <Menu.Item leftSection={<IconSettings size={16} stroke={1.5} />}
+            onClick={() => navigate('/myProfile')}>
             Mein Profil
           </Menu.Item>
 

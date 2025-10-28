@@ -23,8 +23,8 @@ export function SetProfile() {
 
   useEffect(() => {
     console.log("keycloak", keycloak.didInitialize)
-    if (hasProfile || !keycloak.authenticated) {
-      //navigate('/');
+    if (hasProfile) {
+      navigate('/');
     }
   }, [hasProfile, keycloak]);
 
