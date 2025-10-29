@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import { Card, Group, Text, Textarea, Button } from '@mantine/core';
-import { IconEdit, IconX, IconDeviceFloppy } from '@tabler/icons-react';
+import {
+  IconEdit,
+  IconX,
+  IconDeviceFloppy,
+  IconTrash,
+} from '@tabler/icons-react';
 import type { TherapistComment } from '../../../types/therapistComment.type';
 
 function formatDate(d: string | Date) {
@@ -19,12 +24,18 @@ export default function CommentCard({
   updating,
   updateError,
   updateSuccess,
+  onDelete,
+  deleting,
+  deleteError,
 }: {
   comment: TherapistComment;
   onUpdate: (id: string, text: string) => Promise<void>;
   updating: boolean;
   updateError: string | null;
   updateSuccess: boolean;
+  onDelete: (id: string) => Promise<void>;
+  deleting: boolean;
+  deleteError: string | null;
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(comment.text);
@@ -50,9 +61,28 @@ export default function CommentCard({
           {comment.updatedAt && ' • aktualisiert'}
         </Text>
         {!isEditing && (
-          <Button size="xs" variant="subtle" leftSection={<IconEdit size={16} />} onClick={() => setIsEditing(true)}>
-            Bearbeiten
-          </Button>
+          <Group gap="xs" justify="flex-end">
+            <Button
+              size="xs"
+              variant="subtle"
+              leftSection={<IconEdit size={16} />}
+              onClick={() => setIsEditing(true)}
+              disabled={deleting}
+            >
+              Bearbeiten
+            </Button>
+            <Button
+              size="xs"
+              variant="subtle"
+              color="red"
+              leftSection={<IconTrash size={16} />}
+              onClick={() => onDelete(comment.id)}
+              loading={deleting}
+              disabled={updating}
+            >
+              Löschen
+            </Button>
+          </Group>
         )}
       </Group>
 
@@ -70,16 +100,32 @@ export default function CommentCard({
             onKeyDown={onKeyDown}
           />
           <Group gap="xs" justify="flex-end" mt="xs">
-            <Button size="xs" variant="light" leftSection={<IconX size={16} />} onClick={() => setIsEditing(false)} disabled={updating}>
+            <Button
+              size="xs"
+              variant="light"
+              leftSection={<IconX size={16} />}
+              onClick={() => setIsEditing(false)}
+              disabled={updating}
+            >
               Abbrechen
             </Button>
-            <Button size="xs" leftSection={<IconDeviceFloppy size={16} />} onClick={submit} loading={updating}>
+            <Button
+              size="xs"
+              leftSection={<IconDeviceFloppy size={16} />}
+              onClick={submit}
+              loading={updating}
+            >
               Speichern
             </Button>
           </Group>
           {updateError && (
             <Text size="xs" c="red" mt={6}>
               {updateError}
+            </Text>
+          )}
+          {deleteError && (
+            <Text size="xs" c="red" mt={6}>
+              {deleteError}
             </Text>
           )}
           {updateSuccess && (
@@ -92,3 +138,4 @@ export default function CommentCard({
     </Card>
   );
 }
+

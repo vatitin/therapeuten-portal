@@ -1,21 +1,41 @@
 import { useState } from 'react';
-import { Card, Stack, Title, Text, Textarea, Button, Group, ScrollArea } from '@mantine/core';
+import {
+  Card,
+  Stack,
+  Title,
+  Text,
+  Textarea,
+  Button,
+  Group,
+  ScrollArea,
+  Loader,
+  Center,
+} from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import CommentCard from './CommentCard';
 import { useComments } from '../../hooks/useComments';
 import type { TherapistComment } from '../../../types/therapistComment.type';
 
+type CommentsSectionProps = {
+  associationId: string;
+  initialComments?: TherapistComment[];
+};
+
 export default function CommentsSection({
   associationId,
   initialComments = [],
-}: {
-  associationId: string;
-  initialComments?: TherapistComment[];
-}) {
-  const { comments, createComment, updateComment, createState, updateState } = useComments(
-    associationId,
-    initialComments,
-  );
+}: CommentsSectionProps) { 
+  const {
+    comments,
+    createComment,
+    updateComment,
+    deleteComment,
+    createState,
+    updateState,
+    deleteState,
+    readState,
+  } = useComments(associationId, initialComments);
+
   const [draft, setDraft] = useState('');
 
   const submitNew = async () => {
@@ -36,11 +56,21 @@ export default function CommentsSection({
       <Title order={5}>Kommentare</Title>
 
       <Card withBorder radius="md" p="sm">
-        {comments.length === 0 ? (
+        {readState.loading ? (
+          <Center py="sm">
+            <Loader size="sm" />
+          </Center>
+        ) : comments.length === 0 ? (
           <Stack gap={6}>
-            <Text size="sm" c="dimmed">
-              Noch keine Kommentare. Du kannst einen Kommentar hinzufügen.
-            </Text>
+            {readState.error ? (
+              <Text size="sm" c="red">
+                {readState.error}
+              </Text>
+            ) : (
+              <Text size="sm" c="dimmed">
+                Noch keine Kommentare. Du kannst einen Kommentar hinzufügen.
+              </Text>
+            )}
           </Stack>
         ) : (
           <ScrollArea.Autosize mah={240} type="always">
@@ -51,8 +81,15 @@ export default function CommentsSection({
                   comment={c}
                   onUpdate={updateComment}
                   updating={updateState.loadingId === c.id}
-                  updateError={updateState.error}
+                  updateError={
+                    updateState.loadingId === c.id ? updateState.error : null
+                  }
                   updateSuccess={updateState.successId === c.id}
+                  onDelete={deleteComment}
+                  deleting={deleteState.loadingId === c.id}
+                  deleteError={
+                    deleteState.loadingId === c.id ? deleteState.error : null
+                  }
                 />
               ))}
             </Stack>
@@ -64,7 +101,11 @@ export default function CommentsSection({
         <Textarea
           label="Kommentar"
           description="Neuen Kommentar hinzufügen oder Änderungen dokumentieren."
-          placeholder={comments.length === 0 ? 'Z. B. Termin vorschlagen, Rückrufnotiz, nächste Schritte…' : 'Neuen Kommentar anhängen…'}
+          placeholder={
+            comments.length === 0
+              ? 'Z. B. Termin vorschlagen, Rückrufnotiz, nächste Schritte…'
+              : 'Neuen Kommentar anhängen…'
+          }
           autosize
           minRows={6}
           value={draft}
@@ -96,3 +137,4 @@ export default function CommentsSection({
     </Stack>
   );
 }
+
