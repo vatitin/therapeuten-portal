@@ -7,5 +7,5 @@
         "@services/*": ["packages/services/*"]
       }
     },
-    "include": ["apps", "packages"]
+    "include": ["apps", "packages", "therapist-app", "patient-app"]
 }
