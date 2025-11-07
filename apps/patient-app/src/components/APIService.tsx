@@ -1,0 +1,23 @@
+import axios from 'axios';
+
+const createApiClient = (token: string | null = null) => {
+  const client = axios.create({
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    withCredentials: true,
+  });
+
+  client.interceptors.request.use((config) => {
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    } 
+    return config;
+  }, (error) => {
+    return Promise.reject(error);
+  });
+
+  return client;
+};
+
+export default createApiClient;
