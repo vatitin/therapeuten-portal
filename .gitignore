@@ -1,0 +1,53 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment variables
+.env
+.env*.local
+.env.*.local
+*.local
+
+# OS & Editor Specific
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# Dependencies
+# Ignores all node_modules folders in every sub-directory
+**/node_modules
+
+# Build Output
+# Path-specific build folders
+/backend/dist
+/frontend/patient-app/dist
+/frontend/patient-app/build
+/frontend/therapist-app/dist
+/frontend/therapist-app/build
+
+# Test Output
+/coverage
+/.nyc_output
+/backend/coverage
+/frontend/patient-app/coverage
+/frontend/therapist-app/coverage
