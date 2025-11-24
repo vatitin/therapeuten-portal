@@ -3,7 +3,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import maplibregl from 'maplibre-gl';
 import { useEffect, useRef, useState } from 'react';
 import { Box } from '@mantine/core';
-import type { TherapistLocation } from './therapistLocation';
+import type { TherapistLocation } from '../../../types/therapistLocation';
 import * as turf from '@turf/turf';
 
 interface MapProps {

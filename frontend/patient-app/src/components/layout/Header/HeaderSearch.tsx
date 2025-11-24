@@ -12,7 +12,7 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { MantineLogo } from '@mantinex/mantine-logo';
 import classes from './HeaderSearch.module.css';
-import { LocationAutocomplete, type LocationAutocompleteValues } from './LocationAutocomplete';
+import { LocationAutocomplete, type LocationAutocompleteValues } from './features/Map/LocationAutocomplete';
 import { useKeycloak } from '@react-keycloak/web';
 import { AuthButtons } from './AuthButtons';
 import { ProfileContainer } from './ProfileContainer';
