@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 //import 'bootstrap/dist/css/bootstrap.min.css'
 import App from './App.tsx'
 import { ReactKeycloakProvider } from '@react-keycloak/web'
-import keycloak from './keycloak'
+import keycloak from './api/keycloak.ts'
 import { MantineProvider } from '@mantine/core'
 import '@mantine/core/styles.css';
 

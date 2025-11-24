@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import {
-  Avatar,
   Group,
   Menu,
   Text,
@@ -8,7 +7,7 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import { IconUser, IconChevronDown, IconSettings, IconTrash } from '@tabler/icons-react';
-import { useTherapist } from '../hooks/useTherapist';
+import { useTherapist } from '../../hooks/useTherapist';
 import { useNavigate } from 'react-router-dom';
 
 export function ProfileContainer() {
