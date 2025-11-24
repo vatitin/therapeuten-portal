@@ -2,7 +2,7 @@ import { useUserStatus } from "./hooks/useUserStatus";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom"
 import '@mantine/core/styles.css';
 import { SearchMapPage } from "./components/SearchMapPage";
-import { SetProfile } from "./pages/SetProfile";
+import { SetProfile } from "./pages/SetProfilePage";
 import { ApplyForTherapist } from "./components/ApplyForTherapist";
 import { useKeycloak } from "@react-keycloak/web";
 import { useEffect } from "react";
