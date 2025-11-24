@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Box, Container, Flex, Grid, Group, ScrollArea, Text } from '@mantine/core';
 import { HeaderSearch, type HeaderSearchValues } from './HeaderSearch';
-import { Map } from '../components/Map';
+import { Map } from './features/Map/Map';
 import type { TherapistLocation } from './therapistLocation';
 import { TherapistCard } from './TherapistCard';
 import type { TherapistDTO } from './therapist.dto';

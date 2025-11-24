@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
-import createApiClient from '../components/APIService';
+import createApiClient from '../api/APIService';
 
 export function useUserStatus() {
   const { keycloak, initialized } = useKeycloak();

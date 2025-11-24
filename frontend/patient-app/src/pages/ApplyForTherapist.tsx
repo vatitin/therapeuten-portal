@@ -5,7 +5,7 @@ import { IconMapPin, IconUser } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import createApiClient from './APIService';
 import { useParams } from 'react-router-dom';
-import { Map } from '../components/Map';
+import { Map } from './features/Map/Map';
 import { useKeycloak } from '@react-keycloak/web';
 
 export function ApplyForTherapist() {
