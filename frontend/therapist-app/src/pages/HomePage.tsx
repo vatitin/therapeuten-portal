@@ -34,7 +34,7 @@ const useStyles = createStyles((theme, _params) => {
   };
 });
 
-export function Home() {
+export function HomePage() {
   const theme = useMantineTheme();
   const { classes } = useStyles();
   const { keycloak, initialized } = useKeycloak();

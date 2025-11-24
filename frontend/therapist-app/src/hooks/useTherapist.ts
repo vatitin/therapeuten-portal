@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
-import createApiClient from '../../APIService';
-import type { TherapistType } from '../../types/therapist.type';
+import createApiClient from '../api/APIService';
+import type { TherapistType } from '../types/therapist.type';
 import axios from 'axios';
 
 

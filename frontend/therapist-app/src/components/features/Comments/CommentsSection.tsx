@@ -12,8 +12,8 @@ import {
   Center,
 } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
-import CommentCard from './CommentCard';
-import { useComments } from '../../hooks/useComments';
+import CommentCard from '../../features/Comments/CommentCard';
+import { useComments } from '../../../hooks/useComments';
 import type { TherapistComment } from '../../../types/therapistComment.type';
 
 type CommentsSectionProps = {

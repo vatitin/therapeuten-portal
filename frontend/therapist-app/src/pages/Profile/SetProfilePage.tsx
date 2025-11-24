@@ -10,13 +10,13 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { AddressAutofill } from '@mapbox/search-js-react';
-import createApiClient from '../../APIService';
-import { createTherapist } from '../../endpoints';
-import keycloak from '../../keycloak';
+import createApiClient from '../../api/APIService';
+import { createTherapist } from '../../api/endpoints';
+import keycloak from '../../api/keycloak';
 import { useNavigate } from 'react-router-dom';
-import { useUserStatus } from '../hooks/useUserStatus';
+import { useUserStatus } from '../../hooks/useUserStatus';
 
-export function SetProfile() {
+export function SetProfilePage() {
   const { hasProfile } = useUserStatus();
   const navigate = useNavigate();
   const mapboxAccessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || '';  

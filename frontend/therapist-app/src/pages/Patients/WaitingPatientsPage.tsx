@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
 import { useAssociations } from '../../hooks/useAssociations';
-import { PatientsTable } from './PatientsTable';
-import { PatientsDetailsDrawer } from './PatientsDetailsDrawer';
-import { ConfirmationModal } from './ConfirmationModal';
+import { PatientsTable } from '../../components/features/Patients/PatientsTable';
+import { PatientsDetailsDrawer } from '../../components/features/Patients/PatientsDetailsDrawer';
+import { ConfirmationModal } from '../../components/common/ConfirmationModal';
 import { Button, Container, Group, Title, Text, Stack, Divider } from '@mantine/core';
-import createApiClient from '../../../APIService';
-import { deletePatientWithId, updatePatientStatus } from '../../../endpoints';
-import { StatusType } from '../../../constants';
-import type { AssociationType } from '../../../types/association.type';
+import createApiClient from '../../api/APIService';
+import { deletePatientWithId, updatePatientStatus } from '../../api/endpoints';
+import { StatusType } from '../../config/constants';
+import type { AssociationType } from '../../types/association.type';
 
 export function WaitingPatientsPage() {
   const { keycloak } = useKeycloak();

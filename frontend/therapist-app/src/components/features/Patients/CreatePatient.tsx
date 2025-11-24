@@ -3,8 +3,8 @@ import { Container, Title, Paper, Stack, Group, TextInput, Button, Combobox, Inp
 import { useForm } from '@mantine/form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
-import createApiClient from '../../APIService';
-import { addPatientWithStatus } from '../../endpoints';
+import createApiClient from '../../../api/APIService';
+import { addPatientWithStatus } from '../../../api/endpoints';
 
 export function CreatePatient() {
   const { patientStatus } = useParams();

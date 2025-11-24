@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import createApiClient from '../../APIService';
-import type { TherapistComment } from '../../types/therapistComment.type';
-import keycloak from '../../keycloak';
+import createApiClient from '../api/APIService';
+import type { TherapistComment } from '../types/therapistComment.type';
+import keycloak from '../api/keycloak';
 
 type CreateState = { loading: boolean; error: string | null; success: boolean };
 type UpdateState = { loadingId: string | null; error: string | null; successId: string | null };

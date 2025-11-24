@@ -1,6 +1,6 @@
 import { type ReactNode, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useUserStatus } from "../hooks/useUserStatus";
+import { useUserStatus } from "../../hooks/useUserStatus";
 import { useKeycloak } from "@react-keycloak/web";
 import { Loader } from '@mantine/core';
 

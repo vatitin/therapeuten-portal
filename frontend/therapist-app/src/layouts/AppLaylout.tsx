@@ -2,9 +2,9 @@ import { Outlet } from 'react-router-dom';
 import { AppShell, Burger, Group, Text, useMantineTheme } from '@mantine/core';
 import { MantineLogo } from '@mantinex/mantine-logo';
 import { useDisclosure } from '@mantine/hooks';
-import { NavbarSimple } from '../common/Navbar';
+import { NavbarSimple } from '../components/common/Navbar/Navbar';
 import { useTherapist } from '../hooks/useTherapist';
-import { ProfileContainer } from '../common/ProfileContainer';
+import { ProfileContainer } from '../components/common/ProfileContainer';
 
 export function AppLayout() {
   const [opened, { toggle }] = useDisclosure();

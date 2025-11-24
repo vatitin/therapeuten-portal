@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
-import createApiClient from '../../APIService';
-import { hasLocalTherapist } from '../../endpoints';
+import createApiClient from '../api/APIService';
+import { hasLocalTherapist } from '../api/endpoints';
 
 interface UserStatus {
   hasProfile: boolean;

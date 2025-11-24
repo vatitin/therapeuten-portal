@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import createApiClient from '../../APIService';
-import { patientsWithStatus } from '../../endpoints';
-import type { AssociationType } from '../../types/association.type';
+import createApiClient from '../api/APIService';
+import { patientsWithStatus } from '../api/endpoints';
+import type { AssociationType } from '../types/association.type';
 
 export function useAssociations(status: string, token: string | null) {
 

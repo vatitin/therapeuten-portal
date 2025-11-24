@@ -13,8 +13,8 @@ import {
   Notification,
 } from '@mantine/core';
 import { IconCheck, IconX } from '@tabler/icons-react';
-import { useTherapist } from '../hooks/useTherapist';
-import createApiClient from '../../APIService';
+import { useTherapist } from '../../hooks/useTherapist';
+import createApiClient from '../../api/APIService';
 
 export function MyProfileContainer() {
   const { data, loading, error } = useTherapist();

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { therapistProfile } from '../../endpoints';
-import createApiClient from '../../APIService';
-import keycloak from '../../keycloak';
+import { therapistProfile } from '../../api/endpoints';
+import createApiClient from '../../api/APIService';
+import keycloak from '../../api/keycloak';
 
 function Profile() {
   const navigate = useNavigate();

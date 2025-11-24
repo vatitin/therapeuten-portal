@@ -1,6 +1,6 @@
 // ConfirmModal.tsx
 import { Modal, Text, Group, Button, Stack } from '@mantine/core';
-import type { AssociationType } from '../../../types/association.type';
+import type { AssociationType } from '../../types/association.type';
 
 export function ConfirmationModal({
   opened,
