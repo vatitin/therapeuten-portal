@@ -1,0 +1,14 @@
+{
+  "name": "therapeuten-portal-root",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend/*"
+  ],
+  "scripts": {
+    "install:all": "npm install",
+    "start:backend": "npm run start:dev -w backend",
+    "start:patient": "npm run dev -w patient-app",
+    "start:therapist": "npm run dev -w therapist-app"
+  }
+}
