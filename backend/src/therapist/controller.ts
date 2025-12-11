@@ -13,7 +13,7 @@ import {
     ValidationPipe,
 } from '@nestjs/common';
 
-import { AuthenticatedUser, AuthGuard } from 'nest-keycloak-connect';
+import { AuthenticatedUser, AuthGuard, RoleGuard, Roles } from 'nest-keycloak-connect';
 import { Association, StatusType } from 'src/association/entity';
 import { KeycloakUserDTO } from 'src/keycloak-user.dto';
 import { LocalPatientDTO } from 'src/patient/create-local.dto';
@@ -23,7 +23,9 @@ import { TherapistFormDTO } from './TherapistFormDTO.entity';
 import { TherapistWorkflowService } from './worfklow.service';
 import { TherapistUpdateDTO } from './update.dto';
 import { CreateTherapistCommentDto } from 'src/comment/create-therapist-comment.dto';
+import { TherapistAuthGuard } from './therapist-auth.guard';
 
+    
 @UseGuards(AuthGuard)
 @Controller('therapist')
 export class TherapistController {
@@ -54,6 +56,7 @@ export class TherapistController {
 
     @Post('createPatient/:status')
     @UsePipes(ValidationPipe)
+    @UseGuards(TherapistAuthGuard)
     async createPatient(
         @Param('status', new StatusTypeValidationPipe()) status: StatusType,
         @AuthenticatedUser() user: KeycloakUserDTO,
@@ -66,6 +69,7 @@ export class TherapistController {
         );
     }
 
+    @UseGuards(TherapistAuthGuard)
     @Get('getPatientsByStatus/:status')
     async getPatientsFromTherapist(
         @Param('status', new StatusTypeValidationPipe()) status: StatusType,
@@ -79,6 +83,7 @@ export class TherapistController {
         return patients;
     }
 
+    @UseGuards(TherapistAuthGuard)
     @Get('getPatientById/:id')
     async getPatient(
         @Param('id') id: string,
@@ -92,6 +97,7 @@ export class TherapistController {
         return patient;
     }
 
+    @UseGuards(TherapistAuthGuard)
     @Patch('myProfile')
     @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
     async updateMyProfile(
@@ -101,6 +107,7 @@ export class TherapistController {
         return await this.therapistWorkflowService.updateMyProfile(therapist.sub, dto);
     }
 
+    @UseGuards(TherapistAuthGuard)
     @Patch('updatePatient/:id/:status')
     @UsePipes(ValidationPipe)
     async updateLocalPatient(
@@ -115,7 +122,8 @@ export class TherapistController {
             therapistKeycloakId: user.sub,
         });
     }
-
+    
+    @UseGuards(TherapistAuthGuard)
     @Patch('updatePatientStatus/:id/:newStatus')
     @UsePipes(ValidationPipe)
     async updatePatientStatus(
@@ -130,7 +138,8 @@ export class TherapistController {
             newStatus,
         });
     }
-
+    
+    @UseGuards(TherapistAuthGuard)
     @Delete('removePatient/:id')
     async removePatient(
         @Param('id') patientId: string,
@@ -143,6 +152,7 @@ export class TherapistController {
         );
     }
 
+    @UseGuards(TherapistAuthGuard)
     @Post('association/:associationId/comment')
     @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
     async createAssociationComment(
@@ -157,6 +167,7 @@ export class TherapistController {
         });
     }
 
+    @UseGuards(TherapistAuthGuard)
     @Get('association/:associationId/comments')
     async listAssociationComments(
         @Param('associationId') associationId: string,
@@ -168,6 +179,7 @@ export class TherapistController {
         });
     }
 
+    @UseGuards(TherapistAuthGuard)
     @Patch('association/comment/:commentId')
     @UsePipes(
         new ValidationPipe({
@@ -187,7 +199,8 @@ export class TherapistController {
         dto,
         });
     }
-
+    
+    @UseGuards(TherapistAuthGuard)
     @Delete('association/comment/:commentId')
     @HttpCode(HttpStatus.NO_CONTENT) 
     async removeAssociationComment(

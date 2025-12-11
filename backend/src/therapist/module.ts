@@ -11,6 +11,8 @@ import { Therapist } from './entity';
 import { TherapistWorkflowService } from './worfklow.service';
 import { TherapistCommentService } from 'src/domain/therapist-comment.service';
 import { TherapistComment } from 'src/comment/therapist-comment.entity';
+import { TherapistAuthGuard } from './therapist-auth.guard';
+import { AuthGuard } from 'nest-keycloak-connect';
 
 @Module({
     imports: [
@@ -20,7 +22,7 @@ import { TherapistComment } from 'src/comment/therapist-comment.entity';
         AssociationModule,
     ],
     controllers: [TherapistController],
-    providers: [TherapistCRUDService, TherapistWorkflowService, TherapistCommentService],
+    providers: [TherapistCRUDService, TherapistWorkflowService, TherapistCommentService, AuthGuard, TherapistAuthGuard],
     exports: [TherapistCRUDService],
 })
 export class TherapistModule {}

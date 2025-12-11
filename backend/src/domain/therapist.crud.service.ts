@@ -24,7 +24,7 @@ export class TherapistCRUDService {
             where: { keycloakId },
         });
         if (!therapist) {
-            throw new NotFoundException('Therapist not found');
+            throw new NotFoundException('Therapist by KeycloakId not found');
         }
         return therapist;
     }
@@ -34,7 +34,7 @@ export class TherapistCRUDService {
             where: { id },
         });
         if (!therapist) {
-            throw new NotFoundException('Therapist not found');
+            throw new NotFoundException('Therapist by user id not found');
         }
         return therapist;
     }

@@ -6,13 +6,13 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { AuthGuard } from 'nest-keycloak-connect';
-import { PatientCRUDService } from '../domain/patient.crud.service';
+import { TherapistCRUDService } from '../domain/therapist.crud.service';
 
 @Injectable()
-export class PatientAuthGuard implements CanActivate {
+export class TherapistAuthGuard implements CanActivate {
     constructor(
         private readonly keycloakGuard: AuthGuard,
-        private readonly patientCrud: PatientCRUDService,
+        private readonly therapistCrud: TherapistCRUDService,
     ) {}
 
     async canActivate(ctx: ExecutionContext): Promise<boolean> {
@@ -26,13 +26,13 @@ export class PatientAuthGuard implements CanActivate {
         const user = req.user;
 
         const realmRoles = user.realm_access?.roles || [];
-        if (!realmRoles.includes('role_patient')) {
-            throw new ForbiddenException('User is missing role_patient');
+        if (!realmRoles.includes('role_therapist')) {
+            throw new ForbiddenException('User is missing role_therapist');
         }
 
-        const patient = await this.patientCrud.getPatientByKeycloakId(user.sub);
-        if (!patient) {
-            throw new NotFoundException(`No patient found for ${user.sub}`);
+        const therapist = await this.therapistCrud.getTherapistByKeycloakId(user.sub);
+        if (!therapist) {
+            throw new NotFoundException(`No therapist found for ${user.sub}`);
         }
 
         return true;
