@@ -10,7 +10,7 @@ import {
     ValidationPipe,
 } from '@nestjs/common';
 
-import { AuthenticatedUser, AuthGuard } from 'nest-keycloak-connect';
+import { AuthenticatedUser, AuthGuard, } from 'nest-keycloak-connect';
 import { KeycloakUserDTO } from 'src/keycloak-user.dto';
 import { PatientAuthGuard } from 'src/patient/patient-auth.guard';
 import { TherapistResponseDTO } from 'src/therapist/therapist-response.dto';
@@ -19,6 +19,7 @@ import { LocationQueryDto } from './locationQuery.dto';
 import { PatientWorkflowService } from './workflow.service';
 
 @Controller('patient')
+@UseGuards(AuthGuard)
 export class PatientController {
     constructor(private patientWorkflowService: PatientWorkflowService) {}
 
@@ -61,12 +62,10 @@ export class PatientController {
     async getProfile(
       @AuthenticatedUser() keycloakUser: KeycloakUserDTO
     ) {
-        console.log("getProfile controller-----------------------")
       return await this.patientWorkflowService.getProfile(keycloakUser)
     }
 
     @Get('hasLocalPatient')
-    @UseGuards(AuthGuard)
     async hasLocalPatient(@AuthenticatedUser() keycloakUser: KeycloakUserDTO) {
       console.log("hasLocalPatient")
         return await this.patientWorkflowService.hasLocalPatient(keycloakUser);
